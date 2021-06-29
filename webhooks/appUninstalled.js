@@ -5,11 +5,11 @@
  * Add router to webhooks/index.js
  *
  */
-const { ApiVersion } = require('@shopify/shopify-api');
-const { receiveWebhook, registerWebhook } = require('@shopify/koa-shopify-webhooks');
-const Router = require('@koa/router');
-const StoreDetailsModel = require('../models/StoreDetailsModel');
-const SessionModel = require('../models/SessionModel');
+import { ApiVersion } from '@shopify/shopify-api';
+import { receiveWebhook, registerWebhook } from '@shopify/koa-shopify-webhooks';
+import Router from '@koa/router';
+import StoreDetailsModel from '../models/StoreDetailsModel';
+import SessionModel from '../models/SessionModel';
 const webhook = receiveWebhook({ secret: process.env.SHOPIFY_API_SECRET });
 const appUninstallRoute = new Router(); //Update route variable
 const webhookUrl = '/webhooks/app/uninstall';
@@ -54,4 +54,4 @@ appUninstallRoute.post(webhookUrl, webhook, async (ctx) => {
   );
 });
 
-module.exports = { appUninstallWebhook, appUninstallRoute };
+export { appUninstallWebhook, appUninstallRoute };

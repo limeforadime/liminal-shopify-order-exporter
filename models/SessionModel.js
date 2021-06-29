@@ -2,7 +2,7 @@
  * Encrypted Mongo Model to persist sessions across restarts.
  */
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const sessionSchema = new mongoose.Schema({
   id: {
@@ -21,4 +21,4 @@ const sessionSchema = new mongoose.Schema({
 
 const SessionModel = mongoose.model('Session', sessionSchema);
 
-module.exports = SessionModel;
+export default SessionModel;

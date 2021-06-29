@@ -1,8 +1,8 @@
-const Router = require('@koa/router');
+import Router from '@koa/router';
 const templateRoute = new Router();
 
 templateRoute.post('/templateRoute', async (ctx) => {
   ctx.body = 'It works!';
 });
 
-module.exports = templateRoute;
+export default templateRoute;

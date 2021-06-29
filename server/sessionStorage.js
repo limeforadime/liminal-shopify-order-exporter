@@ -3,9 +3,9 @@
  * https://github.com/Shopify/shopify-node-api/blob/main/docs/usage/customsessions.md
  */
 
-const SessionModel = require('../models/SessionModel');
-const { Shopify } = require('@shopify/shopify-api');
-const Cryptr = require('cryptr');
+import SessionModel from'../models/SessionModel';
+import Shopify from'@shopify/shopify-api';
+import Cryptr from'cryptr';
 const cryption = new Cryptr(process.env.ENCRYPTION_STRING);
 
 const storeCallback = async (session) => {
@@ -45,4 +45,4 @@ const deleteCallback = async (id) => {
 
 const sessionStorage = new Shopify.Session.CustomSessionStorage(storeCallback, loadCallback, deleteCallback);
 
-module.exports = sessionStorage;
+export default sessionStorage;

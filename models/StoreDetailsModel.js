@@ -1,7 +1,7 @@
 /**
  * Model to store transactional IDs irrespective of current store status.
  */
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const StoreDetailsSchema = new mongoose.Schema({
   shop: {
@@ -21,4 +21,4 @@ const StoreDetailsSchema = new mongoose.Schema({
 
 const StoreDetailsModel = mongoose.model('store-detail', StoreDetailsSchema);
 
-module.exports = StoreDetailsModel;
+export default StoreDetailsModel;

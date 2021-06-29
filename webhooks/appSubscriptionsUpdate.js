@@ -1,7 +1,7 @@
-const { ApiVersion } = require('@shopify/shopify-api');
-const { receiveWebhook, registerWebhook } = require('@shopify/koa-shopify-webhooks');
-const Router = require('@koa/router');
-const StoreDetailsModel = require('../models/StoreDetailsModel');
+import { ApiVersion } from '@shopify/shopify-api';
+import { receiveWebhook, registerWebhook } from '@shopify/koa-shopify-webhooks';
+import Router from '@koa/router';
+import StoreDetailsModel from '../models/StoreDetailsModel';
 const subscriptionsUpdateRoute = new Router();
 const webhook = receiveWebhook({ secret: process.env.SHOPIFY_API_SECRET });
 const webhookUrl = '/webhooks/app/subscriptions/update';
@@ -42,4 +42,4 @@ subscriptionsUpdateRoute.post(webhookUrl, webhook, async (ctx) => {
   }
 });
 
-module.exports = { subscriptionsUpdateRoute, subscriptionsUpdateWebhook };
+export { subscriptionsUpdateRoute, subscriptionsUpdateWebhook };

@@ -1,5 +1,5 @@
-const { Shopify } = require('@shopify/shopify-api');
-const StoreDetailsModel = require('../models/StoreDetailsModel');
+import Shopify from '@shopify/shopify-api';
+import StoreDetailsModel from '../models/StoreDetailsModel';
 
 const getSubscriptionUrl = async (accessToken, shop, returnUrl) => {
   const query = `mutation {
@@ -60,4 +60,4 @@ const getSubscriptionUrl = async (accessToken, shop, returnUrl) => {
   return response.body.data.appSubscriptionCreate.confirmationUrl;
 };
 
-module.exports = getSubscriptionUrl;
+export default getSubscriptionUrl;

@@ -1,21 +1,23 @@
-require('isomorphic-fetch');
-require('dotenv').config();
-const next = require('next');
-const Koa = require('koa');
-const { default: createShopifyAuth, verifyRequest } = require('@shopify/koa-shopify-auth');
-const { default: Shopify, ApiVersion } = require('@shopify/shopify-api');
-const Router = require('@koa/router');
+import "core-js/stable";
+import "regenerator-runtime/runtime"
+import 'isomorphic-fetch';
+import dotenv from 'dotenv';
+dotenv.config();
+import next from 'next';
+import Koa from 'koa';
+import createShopifyAuth, { verifyRequest } from '@shopify/koa-shopify-auth';
+import Shopify, { ApiVersion } from '@shopify/shopify-api';
+import Router from '@koa/router';
 
-const mongoose = require('mongoose');
-const dbConnect = require('./server/dbConnect');
-const sessionStorage = require('./server/sessionStorage');
-const SessionModel = require('./models/SessionModel');
+import dbConnect from './dbConnect';
+import sessionStorage from './sessionStorage';
+import SessionModel from '../models/SessionModel';
 
-const getSubscriptionUrl = require('./server/getSubscriptionUrl');
-const userRoutes = require('./routes');
-const webhookRouters = require('./webhooks');
-const { appUninstallWebhook } = require('./webhooks/appUninstalled');
-const { subscriptionsUpdateWebhook } = require('./webhooks/appSubscriptionsUpdate');
+import getSubscriptionUrl from './getSubscriptionUrl';
+import userRoutes from '../routes';
+import webhookRouters from '../webhooks';
+import { appUninstallWebhook } from '../webhooks/appUninstalled';
+import { subscriptionsUpdateWebhook } from '../webhooks/appSubscriptionsUpdate';
 
 // const mongoUrl = process.env.MONGO_URL;
 

@@ -1,4 +1,4 @@
-√- upgrade from koa-router to @koa/router
+√ - upgrade from koa-router to @koa/router
 - upgrade to @apollo/client, change the graphql query calls to newer syntax
 - upgrade from commonjs to es modules (require -> import)
 - upgrade webhooks (from koa-shopify-webhooks -> @shopify/shopify-api)
