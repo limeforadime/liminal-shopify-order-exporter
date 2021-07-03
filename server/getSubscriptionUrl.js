@@ -31,33 +31,36 @@ const getSubscriptionUrl = async (accessToken, shop, returnUrl) => {
   }`;
 
   const client = new Shopify.Clients.Graphql(shop, accessToken);
-  const response = await client.query({
-    data: query,
-  });
 
-  const { id, status } = response.body.data.appSubscriptionCreate.appSubscription;
-
-  const result = await StoreDetailsModel.findOne({
-    subscriptionChargeId: id,
-  });
-
-  if (result === null) {
-    await StoreDetailsModel.create({
-      shop,
-      subscriptionChargeId: id,
-      status,
+  try {
+    const response = await client.query({
+      data: query,
     });
-  } else {
-    await StoreDetailsModel.findOneAndUpdate(
-      { shop },
-      {
+    const { id, status } = response.body.data.appSubscriptionCreate.appSubscription;
+    const { confirmationUrl } = response.body.data.appSubscriptionCreate;
+    const result = await StoreDetailsModel.findOne({
+      subscriptionChargeId: id,
+    });
+
+    if (result === null) {
+      await StoreDetailsModel.create({
+        shop,
         subscriptionChargeId: id,
         status,
-      }
-    );
+      });
+    } else {
+      await StoreDetailsModel.findOneAndUpdate(
+        { shop },
+        {
+          subscriptionChargeId: id,
+          status,
+        }
+      );
+    }
+    return confirmationUrl;
+  } catch (e) {
+    console.log(e);
   }
-
-  return response.body.data.appSubscriptionCreate.confirmationUrl;
 };
 
 export default getSubscriptionUrl;

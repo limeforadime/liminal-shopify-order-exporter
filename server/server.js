@@ -1,5 +1,5 @@
-import "core-js/stable";
-import "regenerator-runtime/runtime"
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 import 'isomorphic-fetch';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -86,7 +86,24 @@ app.prepare().then(() => {
     ctx.res.statusCode = 200;
   };
 
-  router.get('/', async (ctx) => {
+  // router.get('/', async (ctx) => {
+  //   const shop = ctx.query.shop;
+  //   const findShopCount = await SessionModel.countDocuments({ shop });
+
+  //   if (findShopCount < 2) {
+  //     await SessionModel.deleteMany({ shop });
+  //     ctx.redirect(`/auth?shop=${shop}`);
+  //   } else {
+  //     await handleRequest(ctx);
+  //   }
+  // });
+
+  server.use(webhookRouters());
+  server.use(userRoutes());
+
+  router.get('(/_next/static/.*)', handleRequest);
+  router.get('/_next/webpack-hmr', handleRequest);
+  router.get('(.*)', async (ctx) => {
     const shop = ctx.query.shop;
     const findShopCount = await SessionModel.countDocuments({ shop });
 
@@ -97,13 +114,6 @@ app.prepare().then(() => {
       await handleRequest(ctx);
     }
   });
-
-  server.use(webhookRouters());
-  server.use(userRoutes());
-
-  router.get('(/_next/static/.*)', handleRequest);
-  router.get('/_next/webpack-hmr', handleRequest);
-  router.get('(.*)', verifyRequest(), handleRequest);
 
   server.use(router.allowedMethods());
   server.use(router.routes());

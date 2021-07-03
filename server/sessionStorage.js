@@ -3,43 +3,57 @@
  * https://github.com/Shopify/shopify-node-api/blob/main/docs/usage/customsessions.md
  */
 
-import SessionModel from'../models/SessionModel';
-import Shopify from'@shopify/shopify-api';
-import Cryptr from'cryptr';
+import SessionModel from '../models/SessionModel';
+import Shopify from '@shopify/shopify-api';
+import Cryptr from 'cryptr';
 const cryption = new Cryptr(process.env.ENCRYPTION_STRING);
 
 const storeCallback = async (session) => {
-  console.log('finding session?');
-  const result = await SessionModel.findOne({ id: session.id });
+  console.log('in #storeCallback(): finding session');
+  try {
+    const result = await SessionModel.findOne({ id: session.id });
 
-  if (result === null) {
-    await SessionModel.create({
-      id: session.id,
-      content: cryption.encrypt(JSON.stringify(session)),
-      shop: session.shop,
-    });
-  } else {
-    await SessionModel.findOneAndUpdate(
-      { id: session.id },
-      {
+    if (result === null) {
+      await SessionModel.create({
+        id: session.id,
         content: cryption.encrypt(JSON.stringify(session)),
         shop: session.shop,
-      }
-    );
+      });
+    } else {
+      await SessionModel.findOneAndUpdate(
+        { id: session.id },
+        {
+          content: cryption.encrypt(JSON.stringify(session)),
+          shop: session.shop,
+        }
+      );
+    }
+  } catch (e) {
+    console.log(e);
   }
   return true;
 };
 
 const loadCallback = async (id) => {
-  const sessionResult = await SessionModel.findOne({ id });
-  if (sessionResult.content.length > 0) {
-    return JSON.parse(cryption.decrypt(sessionResult.content));
+  console.log('in #loadCallback(): finding session');
+  try {
+    const sessionResult = await SessionModel.findOne({ id });
+    if (sessionResult.content.length > 0) {
+      return JSON.parse(cryption.decrypt(sessionResult.content));
+    }
+  } catch (e) {
+    console.log(e);
   }
   return undefined;
 };
 
 const deleteCallback = async (id) => {
-  await SessionModel.deleteOne({ id });
+  console.log('in #deleteCallback(): deleting session');
+  try {
+    await SessionModel.deleteOne({ id });
+  } catch (e) {
+    console.log(e);
+  }
   return true;
 };
 
