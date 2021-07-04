@@ -33,6 +33,7 @@ const appUninstallWebhook = async (shop, accessToken) => {
 
 appUninstallRoute.post(webhookUrl, webhook, async (ctx) => {
   const shop = ctx.state.webhook.payload.domain;
+  console.log('appUninstallRoute.post(): ctx.state.webhook.payload.domain: ', shop);
   await SessionModel.deleteMany({ shop }, (error, data) => {
     if (error) {
       console.log('--> An error occured: ', error.message);

@@ -68,7 +68,6 @@ app.prepare().then(() => {
 
         appUninstallWebhook(shop, accessToken);
         subscriptionsUpdateWebhook(shop, accessToken);
-        console.log('did we even get here during auth?');
         const returnUrl = `https://${Shopify.Context.HOST_NAME}?host=${host}&shop=${shop}`;
         const subscriptionUrl = await getSubscriptionUrl(accessToken, shop, returnUrl);
         ctx.redirect(subscriptionUrl);
