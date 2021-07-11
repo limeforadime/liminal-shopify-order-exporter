@@ -3,7 +3,9 @@
   "description": "Shopify Boilerplate Code written in Next, Node, MongoDB and GraphQL",
   "main": "server/index.js",
   "scripts": {
-    "tunnel": "lt --subdomain https://hey-wuddup-641.loca.lt --port 8081",
+    "tunnel-not-workin": "lt --subdomain https://d83ha8129038hdkku983hlk8hf89h23f.loca.lt --port 8081",
+    "tunnel": "lt --port 8081",
+    "tunnel-ngrok": "ngrok http 8081",
     "dev": "nodemon server/index.js",
     "build": "next build",
     "start": "npm run build && NODE_ENV=production node server/index.js"

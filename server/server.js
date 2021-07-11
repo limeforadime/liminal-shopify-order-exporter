@@ -16,8 +16,12 @@ import SessionModel from '../models/SessionModel';
 import getSubscriptionUrl from './getSubscriptionUrl';
 import userRoutes from '../routes';
 import webhookRouters from '../webhooks';
-import { appUninstallWebhook } from '../webhooks/appUninstalled';
-import { subscriptionsUpdateWebhook } from '../webhooks/appSubscriptionsUpdate';
+import { appUninstallWebhook, handleAppUninstallRequest } from '../webhooks/appUninstalled';
+import {
+  subscriptionsUpdateWebhook,
+  handleSubscriptionsUpdateRequest,
+} from '../webhooks/appSubscriptionsUpdate';
+import { collectionsCreateWebhook, handleCollectionsCreateRequest } from '../webhooks/collectionsCreate';
 
 // const mongoUrl = process.env.MONGO_URL;
 
@@ -59,6 +63,24 @@ app.prepare().then(() => {
   // this is used for "Keygrip" cookie signing, when "signed" = true
   server.keys = [Shopify.Context.API_SECRET_KEY];
 
+  // if server crashed/restarted, need to renew existing webhooks
+  // (feel silly to say, but this might not be necessary)
+  Shopify.Webhooks.Registry.webhookRegistry.push({
+    path: '/webhooks',
+    topic: 'APP_UNINSTALLED',
+    webhookHandler: handleAppUninstallRequest,
+  });
+  Shopify.Webhooks.Registry.webhookRegistry.push({
+    path: '/webhooks',
+    topic: 'APP_SUBSCRIPTIONS_UPDATE',
+    webhookHandler: handleSubscriptionsUpdateRequest,
+  });
+  // Shopify.Webhooks.Registry.webhookRegistry.push({
+  //   path: '/webhooks',
+  //   topic: 'COLLECTIONS_CREATE',
+  //   webhookHandler: handleCollectionsCreateRequest,
+  // });
+
   server.use(
     createShopifyAuth({
       async afterAuth(ctx) {
@@ -66,8 +88,29 @@ app.prepare().then(() => {
         const { shop, accessToken } = ctx.state.shopify;
         const { host } = ctx.query;
 
-        appUninstallWebhook(shop, accessToken);
-        subscriptionsUpdateWebhook(shop, accessToken);
+        // subscribe to pertinent webhooks. Change to Promise.all() eventually for better performance
+        try {
+          await appUninstallWebhook(shop, accessToken);
+          await subscriptionsUpdateWebhook(shop, accessToken);
+          await collectionsCreateWebhook(shop, accessToken);
+          // if successful, print current webhook subscriptions to console
+          const client = new Shopify.Clients.Graphql(shop, accessToken);
+          const topicsResponse = await client.query({
+            data: `{
+                webhookSubscriptions (first: 50) {
+                  edges {
+                    node {
+                      topic
+                    }
+                  }
+                }
+              }`,
+          });
+          const topics = topicsResponse.body.data.webhookSubscriptions.edges.map((v) => v.node.topic);
+          console.dir(`topics: ${topics}`);
+        } catch (e) {
+          console.log('error subscribing to  webhooks');
+        }
         const returnUrl = `https://${Shopify.Context.HOST_NAME}?host=${host}&shop=${shop}`;
         const subscriptionUrl = await getSubscriptionUrl(accessToken, shop, returnUrl);
         ctx.redirect(subscriptionUrl);
@@ -97,9 +140,17 @@ app.prepare().then(() => {
   //   }
   // });
 
-  server.use(webhookRouters());
+  // server.use(webhookRouters());
+
   server.use(userRoutes());
 
+  router.post('/webhooks', async (ctx) => {
+    try {
+      await Shopify.Webhooks.Registry.process(ctx.req, ctx.res);
+    } catch (e) {
+      console.log(e);
+    }
+  });
   router.get('(/_next/static/.*)', handleRequest);
   router.get('/_next/webpack-hmr', handleRequest);
   router.get('(.*)', async (ctx) => {

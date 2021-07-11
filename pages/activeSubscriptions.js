@@ -17,6 +17,17 @@ const ActiveSubscriptions = () => {
       }
     }
   `;
+  const getActiveWebhooks = gql`
+    {
+      webhookSubscriptions(first: 50) {
+        edges {
+          node {
+            topic
+          }
+        }
+      }
+    }
+  `;
 
   return (
     <React.Fragment>
@@ -46,6 +57,19 @@ const ActiveSubscriptions = () => {
               >
                 Home
               </Button>
+            </Card>
+          </Layout.Section>
+          <Layout.Section>
+            <Card title="Getting current webhooks" sectioned>
+              <Query query={getActiveWebhooks}>
+                {({ loading, error, data }) => {
+                  if (error) return <p>{error.message}</p>;
+                  if (loading) return <p>Loading</p>;
+                  console.log(data);
+                  return <p>Check your console for current active webhook subscriptions</p>;
+                }}
+              </Query>
+              <br />
             </Card>
           </Layout.Section>
         </Layout>

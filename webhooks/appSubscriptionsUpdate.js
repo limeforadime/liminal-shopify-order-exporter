@@ -1,45 +1,44 @@
-import { ApiVersion } from '@shopify/shopify-api';
-import { receiveWebhook, registerWebhook } from '@shopify/koa-shopify-webhooks';
-import Router from '@koa/router';
+import { Shopify } from '@shopify/shopify-api';
 import StoreDetailsModel from '../models/StoreDetailsModel';
-const subscriptionsUpdateRoute = new Router();
-const webhook = receiveWebhook({ secret: process.env.SHOPIFY_API_SECRET });
-const webhookUrl = '/webhooks/app/subscriptions/update';
 
 const subscriptionsUpdateWebhook = async (shop, accessToken) => {
-  const webhookStatus = await registerWebhook({
-    address: `${process.env.HOST}${webhookUrl}`,
-    topic: 'APP_SUBSCRIPTIONS_UPDATE',
-    accessToken,
-    shop,
-    apiVersion: ApiVersion.April21,
-  });
-
-  webhookStatus.success
-    ? console.log(`--> Successfully registered subscriptions_update webhook! for ${shop}`)
-    : console.log(
-        '--> Failed to register subscriptions_update webhook',
-        webhookStatus.result.data.webhookSubscriptionCreate.userErrors
-      );
+  try {
+    const response = await Shopify.Webhooks.Registry.register({
+      path: '/webhooks',
+      topic: 'APP_SUBSCRIPTIONS_UPDATE',
+      accessToken,
+      shop,
+      webhookHandler: handleSubscriptionsUpdateRequest,
+    });
+    console.log(`--> Successfully registered subscriptions_update webhook! for ${shop}`);
+  } catch (e) {
+    console.log('--> Failed to register subscriptions_update webhook');
+    console.log(e);
+  }
 };
 
-subscriptionsUpdateRoute.post(webhookUrl, webhook, async (ctx) => {
-  const { admin_graphql_api_id, updated_at, status } = ctx.request.body.app_subscription;
+const handleSubscriptionsUpdateRequest = async (topic, shop, webhookRequestBody) => {
+  console.log(`running ${topic} webhook handler`);
+  const parsedWebhookRequestBody = JSON.parse(webhookRequestBody);
+  const { admin_graphql_api_id, updated_at, status } = parsedWebhookRequestBody.app_subscription;
+  try {
+    const findSubscription = await StoreDetailsModel.find({
+      subscriptionChargeId: admin_graphql_api_id,
+    });
 
-  const findSubscription = await StoreDetailsModel.find({
-    subscriptionChargeId: admin_graphql_api_id,
-  });
-
-  if (findSubscription) {
-    await StoreDetailsModel.findOneAndUpdate(
-      {
-        subscriptionChargeId: admin_graphql_api_id,
-      },
-      { updated_at, status }
-    );
-  } else {
-    console.log('--> Subscription not found', findSubscription);
+    if (findSubscription) {
+      await StoreDetailsModel.findOneAndUpdate(
+        {
+          subscriptionChargeId: admin_graphql_api_id,
+        },
+        { updated_at, status }
+      );
+    } else {
+      console.log('--> Subscription not found', findSubscription);
+    }
+  } catch (e) {
+    console.log(e);
   }
-});
+};
 
-export { subscriptionsUpdateRoute, subscriptionsUpdateWebhook };
+export { subscriptionsUpdateWebhook, handleSubscriptionsUpdateRequest };

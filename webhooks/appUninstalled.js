@@ -5,54 +5,51 @@
  * Add router to webhooks/index.js
  *
  */
-import { ApiVersion } from '@shopify/shopify-api';
-import { receiveWebhook, registerWebhook } from '@shopify/koa-shopify-webhooks';
-import Router from '@koa/router';
+import { Shopify } from '@shopify/shopify-api';
 import StoreDetailsModel from '../models/StoreDetailsModel';
 import SessionModel from '../models/SessionModel';
-const webhook = receiveWebhook({ secret: process.env.SHOPIFY_API_SECRET });
-const appUninstallRoute = new Router(); //Update route variable
-const webhookUrl = '/webhooks/app/uninstall';
 
 const appUninstallWebhook = async (shop, accessToken) => {
-  const webhookStatus = await registerWebhook({
-    address: `${process.env.HOST}${webhookUrl}`,
-    topic: 'APP_UNINSTALLED',
-    accessToken,
-    shop,
-    apiVersion: ApiVersion.April21,
-  });
-
-  webhookStatus.success
-    ? console.log(`--> Successfully registered uninstall webhook! for ${shop}`)
-    : console.log(
-        '--> Failed to register uninstall webhook',
-        webhookStatus.result.data.webhookSubscriptionCreate.userErrors
-      );
+  try {
+    const response = await Shopify.Webhooks.Registry.register({
+      path: '/webhooks',
+      topic: 'APP_UNINSTALLED',
+      accessToken,
+      shop,
+      webhookHandler: handleAppUninstallRequest,
+    });
+    console.log(`--> Successfully registered app_uninstall webhook for ${shop}`);
+  } catch (e) {
+    console.log(`--> Failed to register app_uninstall webhook for ${shop}`);
+    console.log(e);
+  }
 };
 
-appUninstallRoute.post(webhookUrl, webhook, async (ctx) => {
-  const shop = ctx.state.webhook.payload.domain;
-  console.log('appUninstallRoute.post(): ctx.state.webhook.payload.domain: ', shop);
-  await SessionModel.deleteMany({ shop }, (error, data) => {
-    if (error) {
-      console.log('--> An error occured: ', error.message);
-    } else {
-      console.log(`--> Successfully delete sessions data for ${shop}`);
-    }
-  });
-
-  await StoreDetailsModel.updateMany(
-    { shop, status: 'ACTIVE' },
-    { status: 'CANCELLED', updated_at: Date.now() },
-    (error, data) => {
+const handleAppUninstallRequest = async (topic, shop, webhookRequestBody) => {
+  console.log(`running ${topic} webhook handler`);
+  try {
+    await SessionModel.deleteMany({ shop }, (error, data) => {
       if (error) {
         console.log('--> An error occured: ', error.message);
       } else {
-        console.log(`--> Successfully updated subscription status for ${shop}`);
+        console.log(`--> Successfully delete sessions data for ${shop}`);
       }
-    }
-  );
-});
+    });
 
-export { appUninstallWebhook, appUninstallRoute };
+    await StoreDetailsModel.updateMany(
+      { shop, status: 'ACTIVE' },
+      { status: 'CANCELLED', updated_at: Date.now() },
+      (error, data) => {
+        if (error) {
+          console.log('--> An error occured: ', error.message);
+        } else {
+          console.log(`--> Successfully updated subscription status for ${shop}`);
+        }
+      }
+    );
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export { appUninstallWebhook, handleAppUninstallRequest };
