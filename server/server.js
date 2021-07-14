@@ -158,6 +158,7 @@ app.prepare().then(() => {
     const findShopCount = await SessionModel.countDocuments({ shop });
 
     if (findShopCount < 2) {
+      console.log(`In router.get((.*)), deleting sessions with shop: ${shop}`);
       await SessionModel.deleteMany({ shop });
       ctx.redirect(`/auth?shop=${shop}`);
     } else {
