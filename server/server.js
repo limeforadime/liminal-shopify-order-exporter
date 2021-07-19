@@ -1,8 +1,6 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import 'isomorphic-fetch';
-import dotenv from 'dotenv';
-dotenv.config();
 import next from 'next';
 import Koa from 'koa';
 import createShopifyAuth, { verifyRequest } from '@shopify/koa-shopify-auth';
@@ -47,7 +45,7 @@ Shopify.Context.initialize({
   API_SECRET_KEY: process.env.SHOPIFY_API_SECRET,
   SCOPES: process.env.SHOPIFY_API_SCOPES.split(','),
   HOST_NAME: process.env.HOST.replace(/https:\/\//, ''),
-  API_VERSION: ApiVersion.April21,
+  API_VERSION: ApiVersion.July21,
   IS_EMBEDDED_APP: true,
   SESSION_STORAGE: sessionStorage,
 });
@@ -75,11 +73,11 @@ app.prepare().then(() => {
     topic: 'APP_SUBSCRIPTIONS_UPDATE',
     webhookHandler: handleSubscriptionsUpdateRequest,
   });
-  // Shopify.Webhooks.Registry.webhookRegistry.push({
-  //   path: '/webhooks',
-  //   topic: 'COLLECTIONS_CREATE',
-  //   webhookHandler: handleCollectionsCreateRequest,
-  // });
+  Shopify.Webhooks.Registry.webhookRegistry.push({
+    path: '/webhooks',
+    topic: 'COLLECTIONS_CREATE',
+    webhookHandler: handleCollectionsCreateRequest,
+  });
 
   server.use(
     createShopifyAuth({

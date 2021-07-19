@@ -9,17 +9,17 @@ import Cryptr from 'cryptr';
 const cryption = new Cryptr(process.env.ENCRYPTION_STRING);
 
 const storeCallback = async (session) => {
-  console.log('in #storeCallback(): finding session');
   try {
     const result = await SessionModel.findOne({ id: session.id });
-
     if (result === null) {
+      console.log(`in #storeCallback(): creating session with id: ${session.id} and shop: ${session.shop}`);
       await SessionModel.create({
         id: session.id,
         content: cryption.encrypt(JSON.stringify(session)),
         shop: session.shop,
       });
     } else {
+      console.log(`in #storeCallback(): updating session with id: ${session.id} and shop ${session.shop}`);
       await SessionModel.findOneAndUpdate(
         { id: session.id },
         {
