@@ -40,7 +40,7 @@ function MyProvider(props) {
   const client = new ApolloClient({
     link: createHttpLink({
       fetch: userLoggedInFetch(app),
-      credentials: 'include',
+      credentials: 'omit',
     }),
     cache: new InMemoryCache({}),
   });
