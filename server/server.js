@@ -3,7 +3,6 @@ import 'regenerator-runtime/runtime';
 import 'isomorphic-fetch';
 import next from 'next';
 import Koa from 'koa';
-// import bodyParser from 'koa-bodyparser';
 import createShopifyAuth, { verifyRequest } from '@shopify/koa-shopify-auth';
 import Shopify, { ApiVersion } from '@shopify/shopify-api';
 import Router from '@koa/router';
@@ -12,18 +11,11 @@ import dbConnect from '../utils/dbConnect';
 import sessionStorage from './sessionStorage';
 import SessionModel from '../models/SessionModel';
 import webhookRouters from '../webhooks';
-import verifyWebhook from '../utils/verifyWebhook';
 
-import getSubscriptionUrl from './getSubscriptionUrl';
 import userRoutes from '../routes';
 import { appUninstallWebhook } from '../webhooks/appUninstalled';
 import { collectionsCreateWebhook } from '../webhooks/collectionsCreate';
-// import { appUninstallWebhook, handleAppUninstallRequest } from '../webhooks/appUninstalled';
-// import {
-//   subscriptionsUpdateWebhook,
-//   handleSubscriptionsUpdateRequest,
-// } from '../webhooks/appSubscriptionsUpdate';
-// import { collectionsCreateWebhook, handleCollectionsCreateRequest } from '../webhooks/collectionsCreate';
+import createOrUpdateShopEntry from './createOrUpdateShopEntry';
 
 try {
   (async () => await dbConnect())();
@@ -55,24 +47,6 @@ app.prepare().then(() => {
   // this is used for "Keygrip" cookie signing, when "signed" = true
   server.keys = [Shopify.Context.API_SECRET_KEY];
 
-  // if server crashed/restarted, need to renew existing webhooks
-  // (feel silly to say, but this might not be necessary)
-  // Shopify.Webhooks.Registry.webhookRegistry.push({
-  //   path: '/webhooks',
-  //   topic: 'APP_UNINSTALLED',
-  //   webhookHandler: handleAppUninstallRequest,
-  // });
-  // Shopify.Webhooks.Registry.webhookRegistry.push({
-  //   path: '/webhooks',
-  //   topic: 'APP_SUBSCRIPTIONS_UPDATE',
-  //   webhookHandler: handleSubscriptionsUpdateRequest,
-  // });
-  // Shopify.Webhooks.Registry.webhookRegistry.push({
-  //   path: '/webhooks',
-  //   topic: 'COLLECTIONS_CREATE',
-  //   webhookHandler: handleCollectionsCreateRequest,
-  // });
-
   server.use(
     createShopifyAuth({
       async afterAuth(ctx) {
@@ -103,9 +77,12 @@ app.prepare().then(() => {
           console.log('error subscribing to  webhooks');
           console.log(e);
         }
-        const returnUrl = `https://${Shopify.Context.HOST_NAME}?host=${host}&shop=${shop}`;
-        const subscriptionUrl = await getSubscriptionUrl(accessToken, shop, returnUrl);
-        ctx.redirect(subscriptionUrl);
+        // const returnUrl = `https://${Shopify.Context.HOST_NAME}?host=${host}&shop=${shop}`;
+        // const subscriptionUrl = await getSubscriptionUrl(accessToken, shop, returnUrl);
+        // ctx.redirect(subscriptionUrl);
+        await createOrUpdateShopEntry(shop);
+        const returnUrl = `https://${Shopify.Context.HOST_NAME}?host=${host}`;
+        ctx.redirect(`/?shop=${shop}&host=${host}`);
       },
     })
   );
@@ -118,26 +95,8 @@ app.prepare().then(() => {
     ctx.respond = false;
     ctx.res.statusCode = 200;
   };
-  // router.get('/', async (ctx) => {
-  //   const shop = ctx.query.shop;
-  //   const findShopCount = await SessionModel.countDocuments({ shop });
-
-  //   if (findShopCount < 2) {
-  //     await SessionModel.deleteMany({ shop });
-  //     ctx.redirect(`/auth?shop=${shop}`);
-  //   } else {
-  //     await handleRequest(ctx);
-  //   }
-  // });
   server.use(userRoutes());
   server.use(webhookRouters());
-  // router.post('/webhooks', verifyWebhook(), async (ctx) => {
-  //   try {
-  //     await Shopify.Webhooks.Registry.process(ctx.req, ctx.res);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // });
 
   router.get('(/_next/static/.*)', handleRequest);
   router.get('/_next/webpack-hmr', handleRequest);

@@ -3,21 +3,19 @@
  */
 import mongoose from 'mongoose';
 
-const StoreDetailsSchema = new mongoose.Schema({
-  shop: {
-    type: String,
-    required: true,
+const StoreDetailsSchema = new mongoose.Schema(
+  {
+    shop: {
+      type: String,
+      required: true,
+    },
+    status: {
+      type: String,
+      required: true,
+    },
   },
-  subscriptionChargeId: {
-    type: String,
-  },
-  status: {
-    type: String,
-  },
-  updated_at: {
-    type: Date,
-  },
-});
+  { timestamps: true }
+);
 
 const StoreDetailsModel = mongoose.model('store-detail', StoreDetailsSchema);
 

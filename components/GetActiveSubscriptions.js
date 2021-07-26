@@ -27,16 +27,6 @@ export default function GetActiveSubscriptions() {
         Check your console for current active app subscriptions. This is a temporary placeholder while
         subscription routing is being tested.
       </p>
-      {/* <Query query={getActiveSubscriptions}>
-                {({ loading, error, data }) => {
-                  if (error) return <p>{error.message}</p>;
-                  if (loading) return <p>Loading</p>;
-                  console.log(data);
-                  return (
-
-                  );
-                }}
-              </Query> */}
       <br />
       <Button
         size="large"

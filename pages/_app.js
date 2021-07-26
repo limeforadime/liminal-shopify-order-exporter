@@ -31,12 +31,6 @@ function userLoggedInFetch(app) {
 function MyProvider(props) {
   const app = useAppBridge();
 
-  // const client = new ApolloClient({
-  //   fetch: userLoggedInFetch(app),
-  //   fetchOptions: {
-  //     credentials: 'include',
-  //   },
-  // });
   const client = new ApolloClient({
     link: createHttpLink({
       fetch: userLoggedInFetch(app),

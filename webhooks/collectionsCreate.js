@@ -1,12 +1,3 @@
-/**
- * Use this as a template for creating new webhooks
- *
- * Add the webhook to server.js
- * Add router to webhooks/index.js
- *
- */
-// import StoreDetailsModel from '../models/StoreDetailsModel';
-// import SessionModel from '../models/SessionModel';
 import bodyParser from 'koa-bodyparser';
 import { receiveWebhook, registerWebhook } from '@shopify/koa-shopify-webhooks';
 import { ApiVersion } from '@shopify/shopify-api';
