@@ -15,7 +15,8 @@ const storeCallback = async (session) => {
       console.log(`in #storeCallback(): creating session with id: ${session.id} and shop: ${session.shop}`);
       await SessionModel.create({
         id: session.id,
-        content: cryption.encrypt(JSON.stringify(session)),
+        // content: cryption.encrypt(JSON.stringify(session)),
+        content: JSON.stringify(session),
         shop: session.shop,
       });
     } else {
@@ -23,13 +24,15 @@ const storeCallback = async (session) => {
       await SessionModel.findOneAndUpdate(
         { id: session.id },
         {
-          content: cryption.encrypt(JSON.stringify(session)),
+          // content: cryption.encrypt(JSON.stringify(session)),
+          content: JSON.stringify(session),
           shop: session.shop,
         }
       );
+      // return false;
     }
   } catch (e) {
-    console.log(e);
+    throw new Error(e);
   }
   return true;
 };
@@ -38,13 +41,17 @@ const loadCallback = async (id) => {
   console.log('in #loadCallback(): finding session');
   try {
     const sessionResult = await SessionModel.findOne({ id });
-    if (sessionResult.content.length > 0) {
-      return JSON.parse(cryption.decrypt(sessionResult.content));
+    if (sessionResult) {
+      console.log(`found session: ${JSON.parse(sessionResult.content)}`);
+      // return JSON.parse(cryption.decrypt(sessionResult.content));
+      return JSON.parse(sessionResult.content);
+    } else {
+      console.log('returning undefined');
+      return undefined;
     }
   } catch (e) {
-    console.log(e);
+    throw new Error(e);
   }
-  return undefined;
 };
 
 const deleteCallback = async (id) => {

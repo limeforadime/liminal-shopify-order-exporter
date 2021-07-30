@@ -1,12 +1,11 @@
 import React from 'react';
 import Head from 'next/head';
-import { AppProvider } from '@shopify/polaris';
-import { Provider, useAppBridge } from '@shopify/app-bridge-react';
-import { authenticatedFetch } from '@shopify/app-bridge-utils';
 import '@shopify/polaris/dist/styles.css';
 import translations from '@shopify/polaris/locales/en.json';
+import { AppProvider as PolarisProvider } from '@shopify/polaris';
+import { Provider as AppBridgeProvider, useAppBridge } from '@shopify/app-bridge-react';
+import { authenticatedFetch } from '@shopify/app-bridge-utils';
 import ClientRouter from '../components/ClientRouter.js';
-// import ApolloClient from 'apollo-boost';
 import { ApolloProvider, ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';
 import { Redirect } from '@shopify/app-bridge/actions';
 
@@ -34,7 +33,7 @@ function MyProvider(props) {
   const client = new ApolloClient({
     link: createHttpLink({
       fetch: userLoggedInFetch(app),
-      credentials: 'omit',
+      credentials: 'include',
     }),
     cache: new InMemoryCache({}),
   });
@@ -54,8 +53,8 @@ const MyApp = ({ Component, pageProps, host }) => {
         <title>Sample App</title>
         <meta charSet="utf-8" />
       </Head>
-      <AppProvider i18n={translations}>
-        <Provider
+      <PolarisProvider i18n={translations}>
+        <AppBridgeProvider
           config={{
             apiKey: API_KEY,
             host: host,
@@ -64,8 +63,8 @@ const MyApp = ({ Component, pageProps, host }) => {
         >
           <ClientRouter />
           <MyProvider Component={Component} {...pageProps} />
-        </Provider>
-      </AppProvider>
+        </AppBridgeProvider>
+      </PolarisProvider>
     </React.Fragment>
   );
 };

@@ -73,6 +73,7 @@ app.prepare().then(() => {
           });
           const topics = topicsResponse.body.data.webhookSubscriptions.edges.map((v) => v.node.topic);
           console.dir(`topics: ${topics}`);
+          console.log(`Current accessToken: ${accessToken}`);
         } catch (e) {
           console.log('error subscribing to  webhooks');
           console.log(e);
