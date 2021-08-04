@@ -12,9 +12,6 @@ const ActiveSubscriptions = () => {
       <Page>
         <Layout>
           <Layout.Section>
-            <GetActiveSubscriptions />
-          </Layout.Section>
-          <Layout.Section>
             <GetActiveWebhookSubscriptions />
           </Layout.Section>
         </Layout>

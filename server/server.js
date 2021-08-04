@@ -73,7 +73,6 @@ app.prepare().then(() => {
           });
           const topics = topicsResponse.body.data.webhookSubscriptions.edges.map((v) => v.node.topic);
           console.dir(`topics: ${topics}`);
-          console.log(`Current accessToken: ${accessToken}`);
         } catch (e) {
           console.log('error subscribing to  webhooks');
           console.log(e);
@@ -88,6 +87,16 @@ app.prepare().then(() => {
     })
   );
 
+  /* From docs:
+  verifyRequest({
+    ...
+    if false, redirect the user to OAuth. If true, send back a 403 with the following headers:
+      - X-Shopify-API-Request-Failure-Reauthorize: '1'
+      - X-Shopify-API-Request-Failure-Reauthorize-Url: '<auth_url_path>'
+    defaults to false
+    returnHeader: true,
+  }),
+  */
   router.post('/graphql', verifyRequest({ returnHeader: true }), async (ctx, next) => {
     await Shopify.Utils.graphqlProxy(ctx.req, ctx.res);
   });

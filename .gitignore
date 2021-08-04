@@ -5,6 +5,7 @@
 package-lock.json
 
 # Logs
+*.txt
 logs
 *.log
 npm-debug.log*
@@ -64,6 +65,8 @@ typings/
 .rts2_cache_cjs/
 .rts2_cache_es/
 .rts2_cache_umd/
+
+*.csv
 
 # Optional REPL history
 .node_repl_history

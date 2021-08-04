@@ -4,28 +4,10 @@ import '@shopify/polaris/dist/styles.css';
 import translations from '@shopify/polaris/locales/en.json';
 import { AppProvider as PolarisProvider } from '@shopify/polaris';
 import { Provider as AppBridgeProvider, useAppBridge } from '@shopify/app-bridge-react';
-import { authenticatedFetch } from '@shopify/app-bridge-utils';
-import ClientRouter from '../components/ClientRouter.js';
+
 import { ApolloProvider, ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';
-import { Redirect } from '@shopify/app-bridge/actions';
-
-function userLoggedInFetch(app) {
-  const fetchFunction = authenticatedFetch(app);
-
-  return async (uri, options) => {
-    const response = await fetchFunction(uri, options);
-
-    if (response.headers.get('X-Shopify-API-Request-Failure-Reauthorize') === '1') {
-      const authUrlHeader = response.headers.get('X-Shopify-API-Request-Failure-Reauthorize-Url');
-
-      const redirect = Redirect.create(app);
-      redirect.dispatch(Redirect.Action.APP, authUrlHeader || `/auth`);
-      return null;
-    }
-
-    return response;
-  };
-}
+import ClientRouter from '../components/ClientRouter.js';
+import userLoggedInFetch from '../utils/userLoggedInFetch.js';
 
 function MyProvider(props) {
   const app = useAppBridge();
@@ -46,7 +28,7 @@ function MyProvider(props) {
   );
 }
 
-const MyApp = ({ Component, pageProps, host }) => {
+const MyApp = ({ Component, pageProps, host, shop }) => {
   return (
     <React.Fragment>
       <Head>
@@ -62,7 +44,7 @@ const MyApp = ({ Component, pageProps, host }) => {
           }}
         >
           <ClientRouter />
-          <MyProvider Component={Component} {...pageProps} />
+          <MyProvider Component={Component} {...pageProps} shop={shop} />
         </AppBridgeProvider>
       </PolarisProvider>
     </React.Fragment>
@@ -72,6 +54,7 @@ const MyApp = ({ Component, pageProps, host }) => {
 MyApp.getInitialProps = async ({ ctx }) => {
   return {
     host: ctx.query.host,
+    shop: ctx.query.shop,
   };
 };
 

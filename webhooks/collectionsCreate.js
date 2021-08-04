@@ -31,7 +31,7 @@ collectionsCreateRoute.post(webhookUrl, webhook, bodyParser(), verifyWebhook(), 
   /* Returns:
   {
     ┃   topic: 'COLLECTIONS_CREATE',
-    ┃   domain: 'test-store-testing-testing-wuddup.myshopify.com',
+    ┃   domain: 'asdfasdf123.myshopify.com',
     ┃   payload: {
     ┃     id: 273505419418,
     ┃     handle: 'uuuuuuuuuuuuuuuu',

@@ -12,24 +12,19 @@ const storeCallback = async (session) => {
   try {
     const result = await SessionModel.findOne({ id: session.id });
     if (result === null) {
-      console.log(`in #storeCallback(): creating session with id: ${session.id} and shop: ${session.shop}`);
       await SessionModel.create({
         id: session.id,
-        // content: cryption.encrypt(JSON.stringify(session)),
-        content: JSON.stringify(session),
+        content: cryption.encrypt(JSON.stringify(session)),
         shop: session.shop,
       });
     } else {
-      console.log(`in #storeCallback(): updating session with id: ${session.id} and shop ${session.shop}`);
       await SessionModel.findOneAndUpdate(
         { id: session.id },
         {
-          // content: cryption.encrypt(JSON.stringify(session)),
-          content: JSON.stringify(session),
+          content: cryption.encrypt(JSON.stringify(session)),
           shop: session.shop,
         }
       );
-      // return false;
     }
   } catch (e) {
     throw new Error(e);
@@ -38,15 +33,11 @@ const storeCallback = async (session) => {
 };
 
 const loadCallback = async (id) => {
-  console.log('in #loadCallback(): finding session');
   try {
     const sessionResult = await SessionModel.findOne({ id });
     if (sessionResult) {
-      console.log(`found session: ${JSON.parse(sessionResult.content)}`);
-      // return JSON.parse(cryption.decrypt(sessionResult.content));
-      return JSON.parse(sessionResult.content);
+      return JSON.parse(cryption.decrypt(sessionResult.content));
     } else {
-      console.log('returning undefined');
       return undefined;
     }
   } catch (e) {
@@ -55,7 +46,6 @@ const loadCallback = async (id) => {
 };
 
 const deleteCallback = async (id) => {
-  console.log('in #deleteCallback(): deleting session');
   try {
     await SessionModel.deleteOne({ id });
   } catch (e) {
@@ -66,4 +56,31 @@ const deleteCallback = async (id) => {
 
 const sessionStorage = new Shopify.Session.CustomSessionStorage(storeCallback, loadCallback, deleteCallback);
 
+/* Returned session takes the form of:
+{
+┃   id: 'asdfasdf234.myshopify.com_54655436453',
+┃   shop: 'asdfasdf234.myshopify.com',
+┃   state: '90723846879236487',
+┃   scope: 'write_products,write_customers,read_orders',
+┃   expires: 2021-02-03T02:42:38.058Z,
+┃   isOnline: true,
+┃   accessToken: 'fakefake_fakeadsfsa78876f87a6sd6dfddd876asdf876',
+┃   onlineAccessInfo: {
+┃     expires_in: 86398,
+┃     associated_user_scope: 'write_products,write_customers,read_orders',
+┃     session: '98f98h29fh93h9adsf97a685a76s8df57as8df5s7ad68f5',
+┃     account_number: 0,
+┃     associated_user: {
+┃       id: 12823489762384,
+┃       first_name: 'Jim',
+┃       last_name: 'Schmiff',
+┃       email: 'asdf@yahoo.com',
+┃       account_owner: true,
+┃       locale: 'en-US',
+┃       collaborator: false,
+┃       email_verified: true
+┃     }
+┃   }
+┃ }
+*/
 export default sessionStorage;
