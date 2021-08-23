@@ -30,7 +30,7 @@ Shopify.Context.initialize({
   API_SECRET_KEY: process.env.SHOPIFY_API_SECRET,
   SCOPES: process.env.SHOPIFY_API_SCOPES.split(','),
   HOST_NAME: process.env.HOST.replace(/https:\/\//, ''),
-  API_VERSION: ApiVersion.July21,
+  API_VERSION: ApiVersion.Unstable,
   IS_EMBEDDED_APP: true,
   SESSION_STORAGE: sessionStorage,
 });
@@ -59,20 +59,20 @@ app.prepare().then(() => {
           await appUninstallWebhook(shop, accessToken);
           await collectionsCreateWebhook(shop, accessToken);
           // if successful, print current webhook subscriptions to console
-          const client = new Shopify.Clients.Graphql(shop, accessToken);
-          const topicsResponse = await client.query({
-            data: `{
-                webhookSubscriptions (first: 10) {
-                  edges {
-                    node {
-                      topic
-                    }
-                  }
-                }
-              }`,
-          });
-          const topics = topicsResponse.body.data.webhookSubscriptions.edges.map((v) => v.node.topic);
-          console.dir(`topics: ${topics}`);
+          // const client = new Shopify.Clients.Graphql(shop, accessToken);
+          // const topicsResponse = await client.query({
+          //   data: `{
+          //       webhookSubscriptions (first: 10) {
+          //         edges {
+          //           node {
+          //             topic
+          //           }
+          //         }
+          //       }
+          //     }`,
+          // });
+          // const topics = topicsResponse.body.data.webhookSubscriptions.edges.map((v) => v.node.topic);
+          // console.dir(`topics: ${topics}`);
         } catch (e) {
           console.log('error subscribing to  webhooks');
           console.log(e);
@@ -81,7 +81,7 @@ app.prepare().then(() => {
         // const subscriptionUrl = await getSubscriptionUrl(accessToken, shop, returnUrl);
         // ctx.redirect(subscriptionUrl);
         await createOrUpdateShopEntry(shop);
-        const returnUrl = `https://${Shopify.Context.HOST_NAME}?host=${host}`;
+        // const returnUrl = `https://${Shopify.Context.HOST_NAME}?host=${host}`;
         ctx.redirect(`/?shop=${shop}&host=${host}`);
       },
     })
@@ -97,9 +97,30 @@ app.prepare().then(() => {
     returnHeader: true,
   }),
   */
-  router.post('/graphql', verifyRequest({ returnHeader: true }), async (ctx, next) => {
-    await Shopify.Utils.graphqlProxy(ctx.req, ctx.res);
-  });
+  console.log('hey');
+  router.post(
+    '/graphql',
+    // async (ctx, next) => {
+    //   try {
+    //     /* Forced fail zone */
+    //     console.log('In graphql forced fail zone');
+    //     ctx.set('X-Shopify-API-Request-Failure-Reauthorize', '1');
+    //     ctx.status = 401;
+    //     await next();
+    //   } catch (e) {
+    //     ctx.throw(500, 'Server thrown error inside test middleware');
+    //   }
+    // },
+    async (ctx, next) => {
+      console.log('JWT received by server:');
+      console.log(ctx.get('Authorization'));
+      await next();
+    },
+    verifyRequest({ returnHeader: true }),
+    async (ctx, next) => {
+      await Shopify.Utils.graphqlProxy(ctx.req, ctx.res);
+    }
+  );
   const handleRequest = async (ctx) => {
     await handle(ctx.req, ctx.res);
     ctx.respond = false;
@@ -112,6 +133,9 @@ app.prepare().then(() => {
   router.get('/_next/webpack-hmr', handleRequest);
   router.get('(.*)', async (ctx) => {
     const shop = ctx.query.shop;
+    console.log('shop query undefined; returning from function');
+    if (shop == undefined) return;
+
     const findShopCount = await SessionModel.countDocuments({ shop });
 
     if (findShopCount < 2) {

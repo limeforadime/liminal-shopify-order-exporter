@@ -8,10 +8,10 @@ import { Provider as AppBridgeProvider, useAppBridge } from '@shopify/app-bridge
 import { ApolloProvider, ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';
 import ClientRouter from '../components/ClientRouter.js';
 import userLoggedInFetch from '../utils/userLoggedInFetch.js';
+import AppStateWrapper from '../components/AppStateWrapper';
 
 function MyProvider(props) {
   const app = useAppBridge();
-
   const client = new ApolloClient({
     link: createHttpLink({
       fetch: userLoggedInFetch(app),
@@ -32,7 +32,7 @@ const MyApp = ({ Component, pageProps, host, shop }) => {
   return (
     <React.Fragment>
       <Head>
-        <title>Sample App</title>
+        <title>CSV Order Exporter</title>
         <meta charSet="utf-8" />
       </Head>
       <PolarisProvider i18n={translations}>
@@ -43,8 +43,11 @@ const MyApp = ({ Component, pageProps, host, shop }) => {
             forceRedirect: true,
           }}
         >
-          <ClientRouter />
-          <MyProvider Component={Component} {...pageProps} shop={shop} />
+          {/* <AppStateWrapper shopFromServer={shop}> */}
+          <AppStateWrapper>
+            <ClientRouter />
+            <MyProvider Component={Component} {...pageProps} />
+          </AppStateWrapper>
         </AppBridgeProvider>
       </PolarisProvider>
     </React.Fragment>
