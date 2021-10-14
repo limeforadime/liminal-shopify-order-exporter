@@ -5,16 +5,19 @@
 
 import SessionModel from '../models/SessionModel';
 import Shopify from '@shopify/shopify-api';
+import logger from 'npmlog';
 import Cryptr from 'cryptr';
 const cryption = new Cryptr(process.env.ENCRYPTION_STRING);
 
 const storeCallback = async (session) => {
+  logger.info('sessionStorage->storeCallback: ', 'Running storeCallback()');
   try {
     const result = await SessionModel.findOne({ id: session.id });
     if (result === null) {
       await SessionModel.create({
         id: session.id,
         content: cryption.encrypt(JSON.stringify(session)),
+        // content: JSON.stringify(session),
         shop: session.shop,
       });
     } else {
@@ -22,6 +25,7 @@ const storeCallback = async (session) => {
         { id: session.id },
         {
           content: cryption.encrypt(JSON.stringify(session)),
+          // content: JSON.stringify(session),
           shop: session.shop,
         }
       );
@@ -31,12 +35,33 @@ const storeCallback = async (session) => {
   }
   return true;
 };
+// This solution was interesting:
+/*
+async loadCallback(id) {
+    try {
+      var reply = await dbGetHelper.getSessionForShop(id);
+      if (reply) {
+        
+        const parsedJson = JSON.parse(reply);
+        var newSession = new Session(parsedJson['id']);
+        Object.entries(parsedJson).forEach(([key, value]) => newSession[key] = value);
+        
+        return newSession;
+      } else {
+        return undefined;
+      }
+    } catch (err) {
+      throw new Error(err)
+    }
+  }
+*/
 
 const loadCallback = async (id) => {
   try {
     const sessionResult = await SessionModel.findOne({ id });
     if (sessionResult) {
       return JSON.parse(cryption.decrypt(sessionResult.content));
+      // return JSON.parse(sessionResult.content);
     } else {
       return undefined;
     }
@@ -66,6 +91,7 @@ const sessionStorage = new Shopify.Session.CustomSessionStorage(storeCallback, l
 ┃   isOnline: true,
 ┃   accessToken: 'fakefake_fakeadsfsa78876f87a6sd6dfddd876asdf876',
 ┃   onlineAccessInfo: {
+      // this field doesn't seem to do anything when forcefully modified
 ┃     expires_in: 86398,
 ┃     associated_user_scope: 'write_products,write_customers,read_orders',
 ┃     session: '98f98h29fh93h9adsf97a685a76s8df57as8df5s7ad68f5',

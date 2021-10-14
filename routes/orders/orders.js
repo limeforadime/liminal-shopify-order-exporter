@@ -9,19 +9,11 @@ import Router from '@koa/router';
 import { verifyRequest } from '@shopify/koa-shopify-auth';
 import Shopify from '@shopify/shopify-api';
 const ordersRoute = new Router();
+import forcedFailMiddleware from '../../utils/forcedFailMiddleware';
 
 ordersRoute.get(
   '/api/orders',
-  // async (ctx, next) => {
-  //   try {
-  //     /* Forced fail zone */
-  //     ctx.set('X-Shopify-API-Request-Failure-Reauthorize', '1');
-  //     ctx.status = 401;
-  //     await next();
-  //   } catch (e) {
-  //     ctx.throw(500, 'Server thrown error inside test middleware');
-  //   }
-  // },
+  // forcedFailMiddleware,
   verifyRequest({ returnHeader: true }),
   async (ctx) => {
     // TODO: logic to verify something in the header sent from client such as the API key
@@ -46,10 +38,22 @@ ordersRoute.get(
   */
     console.log('All orders route hit');
     const session = await Shopify.Utils.loadCurrentSession(ctx.req, ctx.res);
+    console.log('Checking if session is active: ');
+    if (
+      Shopify.Context.SCOPES.equals(session.scope) &&
+      session.accessToken &&
+      (!session.expires || new Date() <= session.expires)
+    ) {
+      console.log('session is active!');
+    } else {
+      console.log('session NOT active.');
+      ctx.throw(500, 'session not active');
+    }
     const client = new Shopify.Clients.Rest(session.shop, session.accessToken);
     const orders = await client.get({
       path: 'orders',
     });
+    console.log('Orders:');
     console.log(orders.body.orders);
     ctx.response.body = orders.body.orders;
   }

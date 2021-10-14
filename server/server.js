@@ -11,11 +11,14 @@ import dbConnect from '../utils/dbConnect';
 import sessionStorage from './sessionStorage';
 import SessionModel from '../models/SessionModel';
 import webhookRouters from '../webhooks';
+import forcedFailMiddleware from '../utils/forcedFailMiddleware';
 
 import userRoutes from '../routes';
 import { appUninstallWebhook } from '../webhooks/appUninstalled';
 import { collectionsCreateWebhook } from '../webhooks/collectionsCreate';
 import createOrUpdateShopEntry from './createOrUpdateShopEntry';
+
+const apiVersion = '2021-10';
 
 try {
   (async () => await dbConnect())();
@@ -28,11 +31,12 @@ try {
 Shopify.Context.initialize({
   API_KEY: process.env.SHOPIFY_API_KEY,
   API_SECRET_KEY: process.env.SHOPIFY_API_SECRET,
-  SCOPES: process.env.SHOPIFY_API_SCOPES.split(','),
+  SCOPES: process.env.SCOPES.split(','),
   HOST_NAME: process.env.HOST.replace(/https:\/\//, ''),
-  API_VERSION: ApiVersion.Unstable,
+  API_VERSION: apiVersion,
   IS_EMBEDDED_APP: true,
   SESSION_STORAGE: sessionStorage,
+  // SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
 });
 
 const port = parseInt(process.env.PORT, 10) || 8081;
@@ -86,31 +90,9 @@ app.prepare().then(() => {
       },
     })
   );
-
-  /* From docs:
-  verifyRequest({
-    ...
-    if false, redirect the user to OAuth. If true, send back a 403 with the following headers:
-      - X-Shopify-API-Request-Failure-Reauthorize: '1'
-      - X-Shopify-API-Request-Failure-Reauthorize-Url: '<auth_url_path>'
-    defaults to false
-    returnHeader: true,
-  }),
-  */
-  console.log('hey');
   router.post(
     '/graphql',
-    // async (ctx, next) => {
-    //   try {
-    //     /* Forced fail zone */
-    //     console.log('In graphql forced fail zone');
-    //     ctx.set('X-Shopify-API-Request-Failure-Reauthorize', '1');
-    //     ctx.status = 401;
-    //     await next();
-    //   } catch (e) {
-    //     ctx.throw(500, 'Server thrown error inside test middleware');
-    //   }
-    // },
+    // forcedFailMiddleware,
     async (ctx, next) => {
       console.log('JWT received by server:');
       console.log(ctx.get('Authorization'));

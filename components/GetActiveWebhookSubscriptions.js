@@ -12,7 +12,6 @@ import {
 } from '@shopify/polaris';
 import { useAppBridge } from '@shopify/app-bridge-react';
 import { Redirect } from '@shopify/app-bridge/actions';
-import { AppStateContext } from '../components/AppStateWrapper';
 import { Loading } from '@shopify/app-bridge-react';
 
 const GET_ACTIVE_WEBHOOKS = gql`
@@ -29,9 +28,6 @@ const GET_ACTIVE_WEBHOOKS = gql`
 export default function GetActiveWebhookSubscriptions() {
   const app = useAppBridge();
   const router = useRouter();
-  const appState = useContext(AppStateContext);
-  const { shop } = appState;
-  console.log(`ActiveWebhookSubscription's shop value: ${shop}`);
   const redirect = Redirect.create(app);
 
   const handleRedirect = useCallback(async () => {
