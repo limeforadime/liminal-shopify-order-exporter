@@ -1,5 +1,19 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { EmptyState, Button, Card, Frame, Toast, Heading } from '@shopify/polaris';
+import {
+  EmptyState,
+  Button,
+  Card,
+  Frame,
+  Toast,
+  Collapsible,
+  Page,
+  Layout,
+  Stack,
+  DatePicker,
+  List,
+  Tag,
+  Subheading,
+} from '@shopify/polaris';
 import { useAppBridge } from '@shopify/app-bridge-react';
 import { Redirect } from '@shopify/app-bridge/actions';
 import userLoggedInFetch from '../utils/userLoggedInFetch';
@@ -8,65 +22,39 @@ import { useRouter } from 'next/router';
 // debug vvv
 import jwtDecode from 'jwt-decode';
 import { getSessionToken } from '@shopify/app-bridge-utils';
+import FilterCard from '../components/Filtering/FilterCard';
 
 const Index = () => {
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [openDebugButtons, setOpenDebugButtons] = useState(false);
+
   const appState = useContext(AppStateContext);
   const { shop } = appState;
   const router = useRouter();
   const app = useAppBridge();
   const redirect = Redirect.create(app);
 
-  useEffect(() => {
-    const checkIfSessionActive = async () => {
-      console.log('checking if session active...');
-      const res = await userLoggedInFetch(app)('/api/isSessionActive');
-      console.log(`response status code: ${res.status}`);
-      if (res.status != 200) {
-        redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
-      }
-    };
-    if (shop) {
-      checkIfSessionActive();
-    }
-  }, [shop]);
-
-  //! Leaving this off just for testing
-
-  // Shopify session tokens expire after 1 day. This code will check if the user has
-  // visited the app within 12 hours (to be safe) and preemptively force a new Oauth handshake
-  // and give a fresh token, instead of checking only when shop data is requested from
-  // Shopify (which if not valid for any reason will THEN force Oauth while the
-  // user is in the middle of something which in my opinion is bad UX)
-
+  // 10/28/2021 - Will use, but for now this isn't important
+  //
   // useEffect(() => {
-  //   if (shop) {
-  //     console.log('okay shop is defined now');
-  //     // 12 hour time limit, picked on a whim. Anything less than 24 hours (Shopify session token lifespan)
-  //     const timeLimit = 1000 * 60 * 60 * 12;
-  //     const hasVisited = localStorage.getItem('hasVisited') === 'true';
-  //     const expiryTime = localStorage.getItem('expiryTime');
-  //     if (hasVisited && expiryTime) {
-  //       if (Date.now() >= expiryTime) {
-  //         // set expiryTime in localStorage to 12 hours from current time (1000 * 60 * 60 * 12)
-  //         localStorage.setItem('expiryTime', Date.now() + timeLimit);
-  //         // force Oauth
-  //         redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
-  //       } else {
-  //         localStorage.setItem('expiryTime', Date.now() + timeLimit);
-  //       }
-  //     } else {
-  //       // runs on first visit to the app
-  //       localStorage.setItem('hasVisited', true);
-  //       localStorage.setItem('expiryTime', Date.now() + timeLimit);
+  //   const checkIfSessionActive = async () => {
+  //     console.log('checking if session active...');
+  //     const res = await userLoggedInFetch(app)('/api/isSessionActive');
+  //     console.log(`response status code: ${res.status}`);
+  //     if (res.status != 200) {
   //       redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
   //     }
-  //   } else {
-  //     console.log('shop is undefined! Thats ok well just wait for the next render');
+  //   };
+  //   if (shop) {
+  //     checkIfSessionActive();
   //   }
   // }, [shop]);
 
+  const handleDebugToggle = useCallback(
+    () => setOpenDebugButtons((openDebugButtons) => !openDebugButtons),
+    []
+  );
   const handleSessionButton = useCallback(() => {
     console.log(`In Index, getting appStateWrapper's shop: ${shop}`);
   });
@@ -109,29 +97,73 @@ const Index = () => {
   const handleAuthButton = useCallback(async () => {
     redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
   });
-
   const handleRedirect = useCallback(async () => {
     setShowError(false);
     // redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
   });
 
   return (
-    <>
-      {showError ? (
-        <Frame>
-          <Toast content={errorMessage} error={true} duration={6000} onDismiss={handleRedirect} />
-        </Frame>
-      ) : null}
-      <Card sectioned>
-        <Button onClick={handleOrderButton}>Hit Orders Route</Button>
-        <Button onClick={handleAuthButton}>Auth</Button>
-        <Button onClick={handleSessionButton}>GetSession</Button>
-        <Button onClick={handleJWTButton}>Get JWT</Button>
-        <Button size="large" onClick={handleIsSessionActiveButton}>
-          IsSessionActive?
-        </Button>
-      </Card>
-    </>
+    <Page title="Main Page" subtitle="Here's where the magic happens">
+      <Layout>
+        <Layout.Section>
+          {showError ? (
+            <Frame>
+              <Toast content={errorMessage} error={true} duration={6000} onDismiss={handleRedirect} />
+            </Frame>
+          ) : null}
+          <FilterCard />
+          <Card title="Select Fields To Export" sectioned>
+            <Card.Section>
+              <Subheading>🚧🚨 Coming Soon~ 🚧🚨</Subheading>
+            </Card.Section>
+          </Card>
+          <Card sectioned>
+            <Stack vertical>
+              <Button
+                onClick={handleDebugToggle}
+                plain
+                destructive
+                ariaExpanded={openDebugButtons}
+                ariaControls="basic-collapsible"
+              >
+                Debug Buttons
+              </Button>
+              <Collapsible open={openDebugButtons} id="basic-collapsible" expandOnPrint>
+                {/* <Card sectioned subdued> */}
+                <Button onClick={handleOrderButton}>Hit Orders Route</Button>
+                <Button onClick={handleAuthButton}>Auth</Button>
+                <Button onClick={handleSessionButton}>GetSession</Button>
+                <Button onClick={handleJWTButton}>Get JWT</Button>
+                <Button size="large" onClick={handleIsSessionActiveButton}>
+                  IsSessionActive?
+                </Button>
+                {/* </Card> */}
+              </Collapsible>
+            </Stack>
+          </Card>
+        </Layout.Section>
+        <Layout.Section secondary>
+          <Card title="Settings">
+            <Card.Header title="hey wuddup" />
+            <Card.Section title="yo wuddup">
+              <p>Here's some text hey wuddup</p>
+            </Card.Section>
+            <Card.Section title="Address Information" actions={[{ content: 'Edit' }]}>
+              1234 Main Street, Main, CA 90111
+            </Card.Section>
+            <Card.Section title="Customer Information" actions={[{ content: 'Edit' }]}>
+              <List>
+                <List.Item>Jon Smith</List.Item>
+                <List.Item>123 Some Text</List.Item>
+              </List>
+            </Card.Section>
+            <Card.Section title="Misc Information" actions={[{ content: 'Edit' }]}>
+              1234 Main Street, Main, CA 90111
+            </Card.Section>
+          </Card>
+        </Layout.Section>
+      </Layout>
+    </Page>
   );
 };
 

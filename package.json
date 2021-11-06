@@ -1,9 +1,16 @@
 {
-  "name": "shopify-order-exporter",
+  "name": "liminal-shopify-order-exporter",
   "author": {
     "name": "David Gilbert",
     "email": "david_gilbert64@yahoo.com"
   },
+  "license": "MIT",
+  "keywords": [
+    "shopify",
+    "plugin",
+    "node",
+    "next"
+  ],
   "description": "Shopify app which allows shop owners to export CSV data, written in Next, Node, MongoDB and GraphQL",
   "main": "server/index.js",
   "scripts": {
@@ -26,7 +33,10 @@
       ".next"
     ],
     "watch": [
-      "server/**/*"
+      "server/**/*",
+      "routes/**/*",
+      "utils/**/*",
+      "webhooks/**/*"
     ],
     "ext": "js,json"
   },
@@ -55,6 +65,7 @@
     "koa-bodyparser": "^4.3.0",
     "koa-combine-routers": "^4.0.2",
     "koa-session": "^6.2.0",
+    "moment": "^2.29.1",
     "mongoose": "^5.12.7",
     "next": "^11.0.1",
     "raw-body": "^2.4.1",
