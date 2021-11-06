@@ -36,9 +36,18 @@ const FilterCard = () => {
     { label: 'Between:', value: 'between' },
     { label: 'Before:', value: 'before' },
   ];
+  const handleCommonDatesFilterButton = (period) => () => {
+    let tagString;
+    let formattedStartDate = moment().subtract(period, 'days').format('MMM D, YYYY');
+    let formattedEndDate = moment().format('MMM D, YYYY'); //today
+    if (period == 0) {
+      tagString = 'Date: Today';
+    } else {
+      tagString = `Date: Between ${formattedStartDate} - ${formattedEndDate}`;
+    }
+    addTag(tagString);
+  };
   const handleAddDateFilterButton = () => {
-    // TODO: assemble instructions for what tag will look like
-    // eg. Date: On October 31, 2021 or Date: October 31, 2021 - November 3, 2021
     let tagString;
     let formattedStartDate = moment(selectedDates.start).format('MMM D, YYYY');
     let formattedEndDate = moment(selectedDates.end).format('MMM D, YYYY');
@@ -86,12 +95,21 @@ const FilterCard = () => {
       <Card.Section>
         <TextContainer>
           <Stack>
-            <Link></Link>
-            <Link>Today</Link>
-            <Link>Last 7 days</Link>
-            <Link>Last 30 days</Link>
-            <Link>Last 90 days</Link>
-            <Link>Last 12 months</Link>
+            <Button plain onClick={handleCommonDatesFilterButton(0)}>
+              Today
+            </Button>
+            <Button plain onClick={handleCommonDatesFilterButton(7)}>
+              Last 7 days
+            </Button>
+            <Button plain onClick={handleCommonDatesFilterButton(30)}>
+              Last 30 days
+            </Button>
+            <Button plain onClick={handleCommonDatesFilterButton(90)}>
+              Last 90 days
+            </Button>
+            <Button plain onClick={handleCommonDatesFilterButton(365)}>
+              Last 12 months
+            </Button>
           </Stack>
           <Stack>
             <ButtonGroup segmented>
