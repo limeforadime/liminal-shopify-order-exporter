@@ -14,7 +14,7 @@ Payload
 import bodyParser from 'koa-bodyparser';
 import Router from '@koa/router';
 const customersRedact = new Router();
-import verifyWebhook from '../../utils/verifyWebhook';
+import verifyWebhook from '../../utils/server/middleware/verifyWebhook';
 
 customersRedact.post('/gdpr/customers_redact', bodyParser(), verifyWebhook(), async (ctx) => {
   console.log('Customer Redact Request endpoint was hit.');

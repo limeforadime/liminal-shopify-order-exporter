@@ -1,24 +1,23 @@
 import { Button, Popover, ChoiceList } from '@shopify/polaris';
 import { useCallback, useState } from 'react';
 
-const StatusPopover = ({ addTag }) => {
+const StatusPopover = ({ addTag, statusChoices }) => {
   const [statusPopoverActive, setStatusPopoverActive] = useState(false);
   const [statusChoiceSelected, setStatusChoiceSelected] = useState(['open']);
-  const statusChoices = [
-    { label: 'Open', value: 'open' },
-    { label: 'Archived', value: 'archived' },
-    { label: 'Cancelled', value: 'cancelled' },
-  ];
   const handleStatusChoiceChange = useCallback((value) => setStatusChoiceSelected(value), []);
   const toggleStatusPopoverActive = useCallback(
     () => setStatusPopoverActive((popoverActive) => !popoverActive),
     []
   );
   const handleAddStatusFilterButton = useCallback(() => {
-    let tagString;
-    tagString = `Status: ${statusChoiceSelected[0][0].toUpperCase()}${statusChoiceSelected[0].slice(1)}`;
-    addTag(tagString, true);
-    toggleStatusPopoverActive();
+    try {
+      // eg. if given 'open', will return label version of 'Open' as found in statusChoices
+      let tagString = `Status: ${statusChoices.find((choice) => choice.value == statusChoiceSelected).label}`;
+      addTag(tagString, true);
+      toggleStatusPopoverActive();
+    } catch (err) {
+      console.log(err);
+    }
   });
 
   return (

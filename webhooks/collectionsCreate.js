@@ -1,7 +1,7 @@
 import bodyParser from 'koa-bodyparser';
 import { receiveWebhook, registerWebhook } from '@shopify/koa-shopify-webhooks';
 import { ApiVersion } from '@shopify/shopify-api';
-import verifyWebhook from '../utils/verifyWebhook';
+import verifyWebhook from '../utils/server/middleware/verifyWebhook';
 const webhook = receiveWebhook({ secret: process.env.SHOPIFY_API_SECRET });
 import Router from '@koa/router';
 const collectionsCreateRoute = new Router();

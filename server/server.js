@@ -7,11 +7,11 @@ import createShopifyAuth, { verifyRequest } from '@shopify/koa-shopify-auth';
 import Shopify, { ApiVersion } from '@shopify/shopify-api';
 import Router from '@koa/router';
 
-import dbConnect from '../utils/dbConnect';
+import dbConnect from '../utils/server/dbConnect';
 import sessionStorage from './sessionStorage';
 import SessionModel from '../models/SessionModel';
 import webhookRouters from '../webhooks';
-import forcedFailMiddleware from '../utils/forcedFailMiddleware';
+import forcedFailMiddleware from '../utils/server/middleware/forcedFailMiddleware';
 
 import userRoutes from '../routes';
 import { appUninstallWebhook } from '../webhooks/appUninstalled';

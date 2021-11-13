@@ -1,14 +1,7 @@
-/*
-Payload
-{
-  shop_id: 954889,
-  shop_domain: "snowdevil.myshopify.com",
-};
-*/
 import bodyParser from 'koa-bodyparser';
 import Router from '@koa/router';
 const shopRedact = new Router();
-import verifyWebhook from '../../utils/verifyWebhook';
+import verifyWebhook from '../../utils/server/middleware/verifyWebhook';
 
 shopRedact.post('/gdpr/shop_redact', bodyParser(), verifyWebhook(), async (ctx) => {
   console.log('Shop Redact endpoint was hit.');

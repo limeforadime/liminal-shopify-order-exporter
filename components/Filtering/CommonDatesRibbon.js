@@ -7,11 +7,12 @@ const CommonDatesRibbon = ({ addTag }) => {
     let formattedStartDate = moment().subtract(period, 'days').format('MMM D, YYYY');
     let formattedEndDate = moment().format('MMM D, YYYY'); //today
     if (period == 0) {
-      tagString = 'Date: Today';
+      tagString = `Date: On ${formattedEndDate}`;
     } else {
       tagString = `Date: Between ${formattedStartDate} - ${formattedEndDate}`;
     }
     addTag(tagString, true);
+    console.log(`DateRibbon: ${tagString}`);
   };
 
   return (

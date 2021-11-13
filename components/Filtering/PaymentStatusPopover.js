@@ -1,19 +1,9 @@
 import { Button, Popover, ChoiceList } from '@shopify/polaris';
 import { useCallback, useState } from 'react';
 
-const PaymentStatusPopover = ({ addTag }) => {
+const PaymentStatusPopover = ({ addTag, paymentStatusChoices }) => {
   const [paymentStatusPopoverActive, setPaymentStatusPopoverActive] = useState(false);
   const [paymentStatusChoiceSelected, setPaymentStatusChoiceSelected] = useState([]);
-  const paymentStatusChoices = [
-    { label: 'Paid', value: 'paid' },
-    { label: 'Unpaid', value: 'unpaid' },
-    { label: 'Voided', value: 'voided' },
-    { label: 'Pending', value: 'pending' },
-    { label: 'Refunded', value: 'refunded' },
-    { label: 'Authorized', value: 'authorized' },
-    { label: 'Partially paid', value: 'partiallyPaid' },
-    { label: 'Partially refunded', value: 'partiallyRefunded' },
-  ];
   const handlePaymentStatusChoiceChange = useCallback((value) => setPaymentStatusChoiceSelected(value), []);
   const togglePaymentStatusPopoverActive = useCallback(
     () => setPaymentStatusPopoverActive((popoverActive) => !popoverActive),

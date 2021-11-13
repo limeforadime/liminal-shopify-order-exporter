@@ -16,7 +16,7 @@ import {
 } from '@shopify/polaris';
 import { useAppBridge } from '@shopify/app-bridge-react';
 import { Redirect } from '@shopify/app-bridge/actions';
-import userLoggedInFetch from '../utils/userLoggedInFetch';
+import userLoggedInFetch from '../utils/client/userLoggedInFetch';
 import { AppStateContext } from '../components/AppStateWrapper';
 import { useRouter } from 'next/router';
 // debug vvv
@@ -35,21 +35,19 @@ const Index = () => {
   const app = useAppBridge();
   const redirect = Redirect.create(app);
 
-  // 10/28/2021 - Will use, but for now this isn't important
-  //
-  // useEffect(() => {
-  //   const checkIfSessionActive = async () => {
-  //     console.log('checking if session active...');
-  //     const res = await userLoggedInFetch(app)('/api/isSessionActive');
-  //     console.log(`response status code: ${res.status}`);
-  //     if (res.status != 200) {
-  //       redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
-  //     }
-  //   };
-  //   if (shop) {
-  //     checkIfSessionActive();
-  //   }
-  // }, [shop]);
+  useEffect(() => {
+    const checkIfSessionActive = async () => {
+      console.log('checking if session active...');
+      const res = await userLoggedInFetch(app)('/api/isSessionActive');
+      console.log(`response status code: ${res.status}`);
+      if (res.status != 200) {
+        redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
+      }
+    };
+    if (shop) {
+      checkIfSessionActive();
+    }
+  }, [shop]);
 
   const handleDebugToggle = useCallback(
     () => setOpenDebugButtons((openDebugButtons) => !openDebugButtons),
@@ -76,19 +74,33 @@ const Index = () => {
     }
   });
   const handleOrderButton = useCallback(async () => {
-    // try out authenticatedFetch
-    // const sessionToken = await getSessionToken(app);
-    // const res = await fetch('/api/orders?q=heywuddup&b=bitches', {
-    //   headers: {
-    //     Authorization: `Bearer ${sessionToken}`,
-    //   },
-    // });
     try {
       const res = await userLoggedInFetch(app)('/api/orders?created_at_max=2021-07-27T03:25:40-04:00');
-      const responseData = await res.json();
-      console.log(responseData);
-    } catch (e) {
-      console.error(e);
+      if (res.status == 200) {
+        const responseData = await res.json();
+        console.log(responseData);
+      } else {
+        throw new Error("Couldn't fetch orders");
+      }
+    } catch (err) {
+      console.error(err);
+      setShowError(true);
+      setErrorMessage('Sorry, need to refresh session');
+      return;
+    }
+  });
+  const handleOrderCountButton = useCallback(async () => {
+    console.log(new URLSearchParams({ foo: '1', bar: 10 }).toString());
+    try {
+      const res = await userLoggedInFetch(app)('/api/orderCount');
+      if (res.status == 200) {
+        const responseData = await res.json();
+        console.log(responseData);
+      } else {
+        throw new Error("Couldn't fetch order count");
+      }
+    } catch (err) {
+      console.error(err);
       setShowError(true);
       setErrorMessage('Sorry, need to refresh session');
       return;
@@ -131,6 +143,7 @@ const Index = () => {
               <Collapsible open={openDebugButtons} id="basic-collapsible" expandOnPrint>
                 {/* <Card sectioned subdued> */}
                 <Button onClick={handleOrderButton}>Hit Orders Route</Button>
+                <Button onClick={handleOrderCountButton}>Order count</Button>
                 <Button onClick={handleAuthButton}>Auth</Button>
                 <Button onClick={handleSessionButton}>GetSession</Button>
                 <Button onClick={handleJWTButton}>Get JWT</Button>

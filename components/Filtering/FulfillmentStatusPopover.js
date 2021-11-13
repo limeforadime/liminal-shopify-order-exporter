@@ -1,14 +1,9 @@
 import { Button, Popover, ChoiceList } from '@shopify/polaris';
 import { useCallback, useState } from 'react';
 
-const FulfillmentStatusPopover = ({ addTag }) => {
+const FulfillmentStatusPopover = ({ addTag, fulfillmentStatusChoices }) => {
   const [fulfillmentStatusPopoverActive, setFulfillmentStatusPopoverActive] = useState(false);
   const [fulfillmentStatusChoiceSelected, setFulfillmentStatusChoiceSelected] = useState([]);
-  const fulfillmentStatusChoices = [
-    { label: 'Shipped', value: 'shipped' },
-    { label: 'Partially fulfilled', value: 'partial' },
-    { label: 'Unfulfilled', value: 'unfulfilled' },
-  ];
   const handleFulfillmentStatusChoiceChange = useCallback(
     (value) => setFulfillmentStatusChoiceSelected(value),
     []
