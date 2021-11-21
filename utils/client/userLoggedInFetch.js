@@ -14,13 +14,7 @@ function userLoggedInFetch(app) {
       // const authUrlHeader = response.headers.get('X-Shopify-API-Request-Failure-Reauthorize-Url');
       // const redirect = Redirect.create(app);
       // redirect.dispatch(Redirect.Action.APP, authUrlHeader || `/auth?shop=${shop}`);
-
-      // TODO!
-      // For WAY better UX, show a temporary popup first before this forceful
-      // redirect starts. It's kind of jarring.
-      // redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`); // prev way
       throw new Error('Error: Unauthorized');
-      // return null;
     }
 
     return response;

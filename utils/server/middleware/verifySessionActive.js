@@ -9,13 +9,13 @@ const verifySessionActive = () => {
       if (
         Shopify.Context.SCOPES.equals(session.scope) &&
         session.accessToken &&
-        (!session.expires || new Date() <= session.expires)
+        (!session.expires || new Date() <= new Date(session.expires))
       ) {
         logger.info('isSessionActiveRoute: ', 'session is active!');
         await next();
       } else {
-        logger.info('isSessionActiveRoute: ', 'session NOT active.');
-        ctx.body = { message: 'session is NOT active!' };
+        logger.info('isSessionActiveRoute: ', 'session not active.');
+        ctx.body = { message: 'session not active' };
         ctx.throw(500, 'session not active');
       }
     } catch (err) {

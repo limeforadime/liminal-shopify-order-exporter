@@ -28,14 +28,13 @@ const convertTagsStrategies = {
   dateStrategy: function (tagWords, moment) {
     let dateType = tagWords.split(' ')[0].toLowerCase(); // 'on', 'after', 'between', 'before'
     let actualDate = tagWords.split(' ').slice(1).join(' '); // eg. 'Nov 12, 2021';
-    let formattedDate = moment(actualDate, 'MMM D, YYYY').toISOString(); // '2021-11-12T08:00:00.000Z'
     switch (dateType) {
       case 'on':
         return dateSubStrategies.on(actualDate, moment);
       case 'after':
-        return dateSubStrategies.after(formattedDate);
+        return dateSubStrategies.after(actualDate, moment);
       case 'before':
-        return dateSubStrategies.before(formattedDate);
+        return dateSubStrategies.before(actualDate, moment);
       case 'between':
         return dateSubStrategies.between(actualDate, moment);
     }
@@ -65,10 +64,12 @@ const dateSubStrategies = {
       created_at_max: moment(actualDate, 'MMM D, YYYY').endOf('day').toISOString(),
     }).toString();
   },
-  before: (formattedDate) => {
+  before: (actualDate, moment) => {
+    let formattedDate = moment(actualDate, 'MMM D, YYYY').startOf('day').toISOString(); // '2021-11-12T08:00:00.000Z'
     return new URLSearchParams({ created_at_max: formattedDate }).toString();
   },
-  after: (formattedDate) => {
+  after: (actualDate, moment) => {
+    let formattedDate = moment(actualDate, 'MMM D, YYYY').endOf('day').toISOString(); // '2021-11-12T08:00:00.000Z'
     return new URLSearchParams({ created_at_min: formattedDate }).toString();
   },
   between: (actualDate, moment) => {

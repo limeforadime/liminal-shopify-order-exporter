@@ -1,4 +1,0 @@
-It's fucking stupid, it looks like using Shopify's "test app on a store" doesn't work. Need 
-to use this url format instead:
-
-https://1a3a8dc325f4.ngrok.io/auth?shop=test-store-testing-testing-wuddup.myshopify.com
