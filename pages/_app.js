@@ -1,6 +1,6 @@
 import React from 'react';
 import Head from 'next/head';
-import '@shopify/polaris/dist/styles.css';
+import '@shopify/polaris/build/esm/styles.css';
 import translations from '@shopify/polaris/locales/en.json';
 import { AppProvider as PolarisProvider } from '@shopify/polaris';
 import { Provider as AppBridgeProvider, useAppBridge } from '@shopify/app-bridge-react';

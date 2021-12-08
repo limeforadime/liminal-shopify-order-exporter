@@ -78,7 +78,7 @@ app.prepare().then(() => {
           // const topics = topicsResponse.body.data.webhookSubscriptions.edges.map((v) => v.node.topic);
           // console.dir(`topics: ${topics}`);
         } catch (e) {
-          console.log('error subscribing to  webhooks');
+          console.log('error subscribing to webhooks');
           console.log(e);
         }
         // const returnUrl = `https://${Shopify.Context.HOST_NAME}?host=${host}&shop=${shop}`;
