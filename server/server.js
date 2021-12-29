@@ -3,13 +3,14 @@ import 'regenerator-runtime/runtime';
 import 'isomorphic-fetch';
 import next from 'next';
 import Koa from 'koa';
-import createShopifyAuth, { verifyRequest } from '@shopify/koa-shopify-auth';
+import createAuth, { verifyRequest } from '@shopify/koa-shopify-auth';
 import Shopify, { ApiVersion } from '@shopify/shopify-api';
 import Router from '@koa/router';
 
 import dbConnect from '../utils/server/dbConnect';
 import sessionStorage from './sessionStorage';
 import SessionModel from '../models/SessionModel';
+import StoreDetailsModel from '../models/StoreDetailsModel';
 import webhookRouters from '../webhooks';
 import forcedFailMiddleware from '../utils/server/middleware/forcedFailMiddleware';
 
@@ -17,8 +18,6 @@ import userRoutes from '../routes';
 import { appUninstallWebhook } from '../webhooks/appUninstalled';
 import { collectionsCreateWebhook } from '../webhooks/collectionsCreate';
 import createOrUpdateShopEntry from './createOrUpdateShopEntry';
-
-const apiVersion = '2021-10';
 
 try {
   (async () => await dbConnect())();
@@ -33,7 +32,7 @@ Shopify.Context.initialize({
   API_SECRET_KEY: process.env.SHOPIFY_API_SECRET,
   SCOPES: process.env.SCOPES.split(','),
   HOST_NAME: process.env.HOST.replace(/https:\/\//, ''),
-  API_VERSION: apiVersion,
+  API_VERSION: ApiVersion.October21,
   IS_EMBEDDED_APP: true,
   SESSION_STORAGE: sessionStorage,
   // SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
@@ -49,47 +48,42 @@ app.prepare().then(() => {
   const router = new Router();
 
   // this is used for "Keygrip" cookie signing, when "signed" = true
-  server.keys = [Shopify.Context.API_SECRET_KEY];
+  // server.keys = [Shopify.Context.API_SECRET_KEY];
 
-  server.use(
-    createShopifyAuth({
-      async afterAuth(ctx) {
-        console.log('reached afterAuth()');
-        const { shop, accessToken } = ctx.state.shopify;
-        const { host } = ctx.query;
+  router.get('/auth', async (ctx) => {
+    try {
+      const { shop } = ctx.query;
+      console.log(`In /auth. shop: ${shop}`);
+      let authRoute = await Shopify.Auth.beginAuth(ctx.req, ctx.res, shop, '/auth/callback');
+      console.log(`authRoute: ${authRoute}`);
+      ctx.redirect(authRoute);
+    } catch (err) {
+      console.error('/auth: Failed to complete OAuth process');
+      console.error(err);
+    }
+  });
 
-        // subscribe to pertinent webhooks. Change to Promise.all() eventually for better performance
-        try {
-          await appUninstallWebhook(shop, accessToken);
-          await collectionsCreateWebhook(shop, accessToken);
-          // if successful, print current webhook subscriptions to console
-          // const client = new Shopify.Clients.Graphql(shop, accessToken);
-          // const topicsResponse = await client.query({
-          //   data: `{
-          //       webhookSubscriptions (first: 10) {
-          //         edges {
-          //           node {
-          //             topic
-          //           }
-          //         }
-          //       }
-          //     }`,
-          // });
-          // const topics = topicsResponse.body.data.webhookSubscriptions.edges.map((v) => v.node.topic);
-          // console.dir(`topics: ${topics}`);
-        } catch (e) {
-          console.log('error subscribing to webhooks');
-          console.log(e);
-        }
-        // const returnUrl = `https://${Shopify.Context.HOST_NAME}?host=${host}&shop=${shop}`;
-        // const subscriptionUrl = await getSubscriptionUrl(accessToken, shop, returnUrl);
-        // ctx.redirect(subscriptionUrl);
-        await createOrUpdateShopEntry(shop);
-        // const returnUrl = `https://${Shopify.Context.HOST_NAME}?host=${host}`;
-        ctx.redirect(`/?shop=${shop}&host=${host}`);
-      },
-    })
-  );
+  router.get('/auth/callback', async (ctx) => {
+    const { shop, host } = ctx.query;
+    try {
+      console.log('reached /auth/callback');
+      console.log(`shop: ${shop}`);
+      console.log(`host: ${host}`);
+
+      const session = await Shopify.Auth.validateAuthCallback(ctx.req, ctx.res, ctx.query);
+      const { accessToken } = session;
+      // await appUninstallWebhook(shop, accessToken);
+      // await collectionsCreateWebhook(shop, accessToken);
+      await createOrUpdateShopEntry(shop);
+      // ctx.redirect(`${process.env.HOST}?shop=${shop}&host=${host}`);
+      console.log();
+      ctx.redirect(`/?shop=${shop}&host=${host}`);
+    } catch (err) {
+      console.error('/auth/callback: Failed to complete OAuth process');
+      console.log(err);
+    }
+  });
+
   router.post(
     '/graphql',
     // forcedFailMiddleware,
@@ -98,7 +92,7 @@ app.prepare().then(() => {
       console.log(ctx.get('Authorization'));
       await next();
     },
-    verifyRequest({ returnHeader: true }),
+    // verifyRequest({ returnHeader: true }),
     async (ctx, next) => {
       await Shopify.Utils.graphqlProxy(ctx.req, ctx.res);
     }
@@ -114,18 +108,26 @@ app.prepare().then(() => {
   router.get('(/_next/static/.*)', handleRequest);
   router.get('/_next/webpack-hmr', handleRequest);
   router.get('(.*)', async (ctx) => {
-    const shop = ctx.query.shop;
-    console.log('shop query undefined; returning from function');
-    if (shop == undefined) return;
+    console.log('reached (*) route');
+    const { shop } = ctx.query;
+    try {
+      if (shop == undefined) {
+        console.log('shop query undefined; returning from function');
+        throw new Error('Fatal: Shop query undefined, cannot go further');
+      }
+      const findShopCount = await StoreDetailsModel.countDocuments({ shop }).clone();
 
-    const findShopCount = await SessionModel.countDocuments({ shop });
-
-    if (findShopCount < 2) {
-      console.log(`In router.get((.*)), deleting sessions with shop: ${shop}`);
-      await SessionModel.deleteMany({ shop });
-      ctx.redirect(`/auth?shop=${shop}`);
-    } else {
-      await handleRequest(ctx);
+      if (findShopCount < 1) {
+        console.log('(*) route: didnt find shop, redirecting to /auth?shop=shop');
+        // console.log(`In router.get((.*)), deleting sessions with shop: ${shop}`);
+        // await SessionModel.deleteMany({ shop }).clone();
+        ctx.redirect(`/auth?shop=${shop}`);
+      } else {
+        console.log('(*) route: successful, handling request now');
+        await handleRequest(ctx);
+      }
+    } catch (err) {
+      console.log(err);
     }
   });
 

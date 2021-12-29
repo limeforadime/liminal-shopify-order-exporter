@@ -13,7 +13,7 @@ const collectionsCreateWebhook = async (shop, accessToken) => {
     topic: 'COLLECTIONS_CREATE',
     accessToken,
     shop,
-    apiVersion: ApiVersion.July21,
+    apiVersion: ApiVersion.October21,
   });
 
   webhookStatus.success

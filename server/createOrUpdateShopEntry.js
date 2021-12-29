@@ -11,6 +11,7 @@ const createOrUpdateShopEntry = async (shop) => {
         shop,
         status: 'ACTIVE',
       });
+      console.log('Successfully added shop to database');
     } else {
       await StoreDetailsModel.findOneAndUpdate(
         { shop },
@@ -18,6 +19,7 @@ const createOrUpdateShopEntry = async (shop) => {
           status: 'ACTIVE',
         }
       );
+      console.log('Updated shop in database');
     }
   } catch (e) {
     console.log(e);

@@ -47,23 +47,24 @@ const FilterCard = () => {
     ],
   };
 
-  useEffect(() => {
-    const getOrderCount = async () => {
-      try {
-        // TODO: add search params to url
-        const res = await userLoggedInFetch(app)('/api/orderCount');
-        if (res.status == 200) {
-          const responseData = await res.json();
-          setOrderCount(Number(responseData));
-        } else {
-          throw new Error("Couldn't fetch order count");
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    getOrderCount();
-  }, [selectedTags]);
+  // Off temporarily
+  // useEffect(() => {
+  //   const getOrderCount = async () => {
+  //     try {
+  //       // TODO: add search params to url
+  //       const res = await userLoggedInFetch(app)('/api/orderCount');
+  //       if (res.status == 200) {
+  //         const responseData = await res.json();
+  //         setOrderCount(Number(responseData));
+  //       } else {
+  //         throw new Error("Couldn't fetch order count");
+  //       }
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   };
+  //   getOrderCount();
+  // }, [selectedTags]);
 
   const removeTag = useCallback(
     (tag) => () => {

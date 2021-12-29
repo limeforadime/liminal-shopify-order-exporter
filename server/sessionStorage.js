@@ -13,53 +13,38 @@ const storeCallback = async (session) => {
   logger.info('sessionStorage->storeCallback: ', 'Running storeCallback()');
   try {
     const result = await SessionModel.findOne({ id: session.id });
+
     if (result === null) {
+      // https://github.com/Shopify/shopify-node-api/issues/224#issuecomment-888579421
+      // "store session token", lasts 24hrs
+      // "user session token", lasts 60 seconds so set it to expire 60 seconds from now
       await SessionModel.create({
         id: session.id,
         content: cryption.encrypt(JSON.stringify(session)),
-        // content: JSON.stringify(session),
         shop: session.shop,
       });
+      logger.info('sessionStorage->storeCallback: ', 'Created session model document');
     } else {
       await SessionModel.findOneAndUpdate(
         { id: session.id },
         {
           content: cryption.encrypt(JSON.stringify(session)),
-          // content: JSON.stringify(session),
           shop: session.shop,
         }
       );
+      logger.info('sessionStorage->storeCallback: ', 'Updated session model');
     }
   } catch (e) {
     throw new Error(e);
   }
   return true;
 };
-// This solution was interesting:
-/*
-async loadCallback(id) {
-    try {
-      var reply = await dbGetHelper.getSessionForShop(id);
-      if (reply) {
-        
-        const parsedJson = JSON.parse(reply);
-        var newSession = new Session(parsedJson['id']);
-        Object.entries(parsedJson).forEach(([key, value]) => newSession[key] = value);
-        
-        return newSession;
-      } else {
-        return undefined;
-      }
-    } catch (err) {
-      throw new Error(err)
-    }
-  }
-*/
 
 const loadCallback = async (id) => {
   try {
     const sessionResult = await SessionModel.findOne({ id });
     if (sessionResult) {
+      logger.info('sessionStorage->loadCallback: ', 'Loaded session model');
       return JSON.parse(cryption.decrypt(sessionResult.content));
       // return JSON.parse(sessionResult.content);
     } else {
@@ -71,6 +56,7 @@ const loadCallback = async (id) => {
 };
 
 const deleteCallback = async (id) => {
+  console.log('SESSION DELETE CALLBACK: deleting one session.');
   try {
     await SessionModel.deleteOne({ id });
   } catch (e) {

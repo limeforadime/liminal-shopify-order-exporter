@@ -35,19 +35,20 @@ const Index = () => {
   const app = useAppBridge();
   const redirect = Redirect.create(app);
 
-  useEffect(() => {
-    const checkIfSessionActive = async () => {
-      console.log('checking if session active...');
-      const res = await userLoggedInFetch(app)('/api/isSessionActive');
-      console.log(`response status code: ${res.status}`);
-      if (res.status != 200) {
-        redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
-      }
-    };
-    if (shop) {
-      checkIfSessionActive();
-    }
-  }, [shop]);
+  // Turning off temporarily
+  // useEffect(() => {
+  //   const checkIfSessionActive = async () => {
+  //     console.log('checking if session active...');
+  //     const res = await userLoggedInFetch(app)('/api/isSessionActive');
+  //     console.log(`response status code: ${res.status}`);
+  //     if (res.status != 200) {
+  //       redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
+  //     }
+  //   };
+  //   if (shop) {
+  //     checkIfSessionActive();
+  //   }
+  // }, [shop]);
 
   const handleDebugToggle = useCallback(
     () => setOpenDebugButtons((openDebugButtons) => !openDebugButtons),
@@ -107,11 +108,12 @@ const Index = () => {
     }
   });
   const handleAuthButton = useCallback(async () => {
-    redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
+    // redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
+    redirect.dispatch(Redirect.Action.REMOTE, `${app.localOrigin}/auth?shop=${shop}`);
   });
   const handleRedirect = useCallback(async () => {
     setShowError(false);
-    // redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
+    redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
   });
 
   return (

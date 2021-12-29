@@ -12,6 +12,7 @@ import AppStateWrapper from '../components/AppStateWrapper';
 
 function MyProvider(props) {
   const app = useAppBridge();
+  console.log('app bridge apollo client doing stuff');
   const client = new ApolloClient({
     link: createHttpLink({
       fetch: userLoggedInFetch(app),

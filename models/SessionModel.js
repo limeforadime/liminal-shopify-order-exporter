@@ -17,6 +17,11 @@ const sessionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  createdAt: {
+    type: Date,
+    expires: '24h',
+    default: Date.now,
+  },
 });
 
 const SessionModel = mongoose.model('Session', sessionSchema);

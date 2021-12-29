@@ -1,5 +1,5 @@
 import Router from '@koa/router';
-import { verifyRequest } from '@shopify/koa-shopify-auth';
+// import { verifyRequest } from '@shopify/koa-shopify-auth';
 import Shopify from '@shopify/shopify-api';
 const orderCountRoute = new Router();
 import verifySessionActive from '../../utils/server/middleware/verifySessionActive';
@@ -13,7 +13,7 @@ import verifySessionActive from '../../utils/server/middleware/verifySessionActi
 
 orderCountRoute.get(
   '/api/orderCount',
-  verifyRequest({ returnHeader: true }),
+  // verifyRequest({ returnHeader: true }),
   verifySessionActive(),
   async (ctx) => {
     try {

@@ -8,20 +8,13 @@ const dbConnect = async () => {
     return;
   }
 
-  return mongoose.connect(
-    process.env.MONGO_URL,
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    },
-    (err) => {
-      if (err) {
-        console.error(err);
-        console.log(`MongoDB wasn't able to connect :(`);
-        process.exit();
-      }
+  return mongoose.connect(process.env.MONGO_URL, (err) => {
+    if (err) {
+      console.error(err);
+      console.log(`MongoDB wasn't able to connect :(`);
+      process.exit();
     }
-  );
+  });
 };
 
 export default dbConnect;
