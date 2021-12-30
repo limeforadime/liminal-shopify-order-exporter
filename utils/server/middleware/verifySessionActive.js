@@ -20,8 +20,8 @@ const verifySessionActive = () => {
         await next();
       } else {
         logger.info('INFO isSessionActiveRoute: ', 'session not active.');
-        // logger.info(`INFO redirecting to auth with shop: ${shop}`);
-        // ctx.redirect(`/auth/callback?shop=${shop}`);
+        logger.info(`INFO redirecting to auth with shop: ${shop}`);
+        ctx.redirect(`/auth?shop=${shop}`);
         ctx.throw(500, 'session not active');
         // ctx.body = { message: 'session not active' };
       }

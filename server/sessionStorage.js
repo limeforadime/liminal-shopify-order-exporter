@@ -18,21 +18,25 @@ const storeCallback = async (session) => {
       // https://github.com/Shopify/shopify-node-api/issues/224#issuecomment-888579421
       // "store session token", lasts 24hrs
       // "user session token", lasts 60 seconds so set it to expire 60 seconds from now
-      await SessionModel.create({
+      const newSession = await SessionModel.create({
         id: session.id,
+        // content: JSON.stringify(session),
         content: cryption.encrypt(JSON.stringify(session)),
         shop: session.shop,
       });
       logger.info('sessionStorage->storeCallback: ', 'Created session model document');
+      console.log(newSession.id);
     } else {
-      await SessionModel.findOneAndUpdate(
+      const updatedSession = await SessionModel.findOneAndUpdate(
         { id: session.id },
         {
+          // content: JSON.stringify(session),
           content: cryption.encrypt(JSON.stringify(session)),
           shop: session.shop,
         }
       );
       logger.info('sessionStorage->storeCallback: ', 'Updated session model');
+      console.log(updatedSession.id);
     }
   } catch (e) {
     throw new Error(e);
@@ -45,6 +49,7 @@ const loadCallback = async (id) => {
     const sessionResult = await SessionModel.findOne({ id });
     if (sessionResult) {
       logger.info('sessionStorage->loadCallback: ', 'Loaded session model');
+      console.log(JSON.stringify(sessionResult.id));
       return JSON.parse(cryption.decrypt(sessionResult.content));
       // return JSON.parse(sessionResult.content);
     } else {
@@ -56,7 +61,7 @@ const loadCallback = async (id) => {
 };
 
 const deleteCallback = async (id) => {
-  console.log('SESSION DELETE CALLBACK: deleting one session.');
+  logger.info('sessionStorage->deleteCallback: ', `SESSION DELETE CALLBACK: deleting id: ${id}`);
   try {
     await SessionModel.deleteOne({ id });
   } catch (e) {

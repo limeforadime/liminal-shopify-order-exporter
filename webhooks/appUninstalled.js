@@ -14,7 +14,7 @@ const appUninstallWebhook = async (shop, accessToken) => {
     topic: 'APP_UNINSTALLED',
     accessToken,
     shop,
-    apiVersion: ApiVersion.October21,
+    apiVersion: 'unstable',
   });
 
   webhookStatus.success
