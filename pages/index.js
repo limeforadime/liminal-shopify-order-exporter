@@ -23,6 +23,7 @@ import { useRouter } from 'next/router';
 import jwtDecode from 'jwt-decode';
 import { getSessionToken } from '@shopify/app-bridge-utils';
 import FilterCard from '../components/Filtering/FilterCard';
+import FieldsCard from '../components/Fields/FieldsCard';
 
 const Index = () => {
   const [showError, setShowError] = useState(false);
@@ -36,19 +37,19 @@ const Index = () => {
   const redirect = Redirect.create(app);
 
   // Turning off temporarily
-  // useEffect(() => {
-  //   const checkIfSessionActive = async () => {
-  //     console.log('checking if session active...');
-  //     const res = await userLoggedInFetch(app)('/api/isSessionActive');
-  //     console.log(`response status code: ${res.status}`);
-  //     if (res.status != 200) {
-  //       redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
-  //     }
-  //   };
-  //   if (shop) {
-  //     checkIfSessionActive();
-  //   }
-  // }, [shop]);
+  useEffect(() => {
+    const checkIfSessionActive = async () => {
+      console.log('checking if session active...');
+      const res = await userLoggedInFetch(app)('/api/isSessionActive');
+      console.log(`response status code: ${res.status}`);
+      if (res.status != 200) {
+        redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
+      }
+    };
+    if (shop) {
+      checkIfSessionActive();
+    }
+  }, [shop]);
 
   const handleDebugToggle = useCallback(
     () => setOpenDebugButtons((openDebugButtons) => !openDebugButtons),
@@ -126,11 +127,7 @@ const Index = () => {
             </Frame>
           ) : null}
           <FilterCard />
-          <Card title="Select Fields To Export" sectioned>
-            <Card.Section>
-              <Subheading>🚧🚨 Coming Soon~ 🚧🚨</Subheading>
-            </Card.Section>
-          </Card>
+          <FieldsCard />
           <Card sectioned>
             <Stack vertical>
               <Button

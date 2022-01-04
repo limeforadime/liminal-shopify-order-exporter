@@ -25,7 +25,6 @@ const storeCallback = async (session) => {
         shop: session.shop,
       });
       logger.info('sessionStorage->storeCallback: ', 'Created session model document');
-      console.log(newSession.id);
     } else {
       const updatedSession = await SessionModel.findOneAndUpdate(
         { id: session.id },
@@ -36,7 +35,6 @@ const storeCallback = async (session) => {
         }
       );
       logger.info('sessionStorage->storeCallback: ', 'Updated session model');
-      console.log(updatedSession.id);
     }
   } catch (e) {
     throw new Error(e);
@@ -49,7 +47,6 @@ const loadCallback = async (id) => {
     const sessionResult = await SessionModel.findOne({ id });
     if (sessionResult) {
       logger.info('sessionStorage->loadCallback: ', 'Loaded session model');
-      console.log(JSON.stringify(sessionResult.id));
       return JSON.parse(cryption.decrypt(sessionResult.content));
       // return JSON.parse(sessionResult.content);
     } else {
