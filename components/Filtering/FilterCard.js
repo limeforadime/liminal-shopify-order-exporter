@@ -20,10 +20,10 @@ import StatusPopover from './StatusPopover';
 import PaymentStatusPopover from './PaymentStatusPopover';
 import FulfillmentStatusPopover from './FulfillmentStatusPopover';
 
-const FilterCard = () => {
+const FilterCard = ({ selectedTags, setSelectedTags }) => {
   const app = useAppBridge();
-  const [selectedTags, setSelectedTags] = useState([]);
   const [orderCount, setOrderCount] = useState(0);
+
   let allStatusChoices = {
     paymentStatusChoices: [
       { label: 'Paid', value: 'paid' },

@@ -17,7 +17,7 @@ import { useAppBridge, Loading } from '@shopify/app-bridge-react';
 import { getSessionToken } from '@shopify/app-bridge-utils';
 import { Redirect } from '@shopify/app-bridge/actions';
 
-export const AppStateContext = React.createContext('');
+const AppStateContext = React.createContext('');
 
 const AppStateWrapper = ({ children }) => {
   const app = useAppBridge();
@@ -78,43 +78,6 @@ const AppStateWrapper = ({ children }) => {
     shop,
   };
 
-  // MINE
-  // return (
-  //   <AppStateContext.Provider value={exposedData}>
-  //     <>
-  //       {isPageLoading ? (
-  //         <>
-  //           <Frame>
-  //             <Loading />
-  //           </Frame>
-  //           <div
-  //             style={{
-  //               width: '100%',
-  //               height: '100vh',
-  //               display: 'flex',
-  //               justifyContent: 'center',
-  //               alignItems: 'center',
-  //               position: 'fixed',
-  //               top: '0px',
-  //               left: '0px',
-  //             }}
-  //           >
-  //             <Spinner accessibilityLabel="Loading" size="large" color="teal" />
-  //           </div>
-  //         </>
-  //       ) : (
-  //         children
-  //       )}
-  //       {isToast ? (
-  //         <Frame>
-  //           <Toast content={toastMessage} error={isToastError} onDismiss={() => hideToast()} />
-  //         </Frame>
-  //       ) : null}
-  //     </>
-  //   </AppStateContext.Provider>
-  // );
-
-  // THEIRS
   const loadingPage = isPageLoading ? null : { display: 'none' };
   const mainPageDisplay = isPageLoading ? { display: 'none' } : null;
   return (
@@ -191,4 +154,5 @@ const AppStateWrapper = ({ children }) => {
   );
 };
 
+export { AppStateContext };
 export default AppStateWrapper;

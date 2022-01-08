@@ -16,29 +16,20 @@ import {
   Layout,
 } from '@shopify/polaris';
 import { InfoMinor } from '@shopify/polaris-icons';
-import React, { useCallback, useEffect, useState } from 'react';
-import { fieldData } from '../fieldData';
+import React, { useCallback, useEffect, useState, useContext } from 'react';
+import { fieldsSourceData } from './fieldsData';
 import styles from './FieldsCard.module.css';
+import FieldsDropdown from './FieldsDropdown';
+import { FieldsStateContext } from './FieldsStateWrapper';
 
 const FieldsCard = () => {
-  const [checkedMainState, setCheckedMainState] = useState(new Array(fieldData.main.length).fill(false));
-  const [checkedCustomerState, setCheckedCustomerState] = useState(
-    new Array(fieldData.customer.length).fill(false)
-  );
-  const [checkedDiscountCodesState, setCheckedDiscountCodesState] = useState(
-    new Array(fieldData.discountCodes.length).fill(false)
-  );
-  const [openMain, setOpenMain] = useState(true);
   const [openCustomer, setOpenCustomer] = useState(false);
   const [openDiscountCodes, setOpenDiscountCodes] = useState(false);
-  const handleMainToggle = useCallback(() => setOpenMain((open) => !open), []);
+  const fieldsState = useContext(FieldsStateContext);
+
   const handleCustomerToggle = useCallback(() => setOpenCustomer((open) => !open), []);
   const handleDiscountCodesToggle = useCallback(() => setOpenDiscountCodes((open) => !open), []);
 
-  const handleMainChange = (position) => {
-    const updatedCheckedState = checkedMainState.map((item, index) => (index === position ? !item : item));
-    setCheckedMainState(updatedCheckedState);
-  };
   const handleCustomerChange = (position) => {
     const updatedCheckedState = checkedCustomerState.map((item, index) => (index === position ? item : item));
     setCheckedCustomerState(updatedCheckedState);
@@ -52,66 +43,98 @@ const FieldsCard = () => {
 
   return (
     <Card title="Select Fields" sectioned>
-      <Button
-        monochrome
-        fullWidth
-        disclosure={openMain ? 'up' : 'down'}
-        textAlign="left"
-        onClick={handleMainToggle}
-        ariaExpanded={openMain}
-        ariaControls="basic-collapsible"
-      >
-        Orders
-      </Button>
+      <FieldsDropdown
+        buttonTitle="Order Fields"
+        accessibilityId={'main-fields-dropdown'}
+        height="300px"
+        initialOpenState={true}
+        sourceData={fieldsSourceData.main}
+        checkedState={fieldsState.checkedMainState}
+        setCheckedState={fieldsState.setCheckedMainState}
+      />
+      <FieldsDropdown
+        buttonTitle="Customer"
+        accessibilityId={'customer-fields-dropdown'}
+        height="100px"
+        initialOpenState={false}
+        sourceData={fieldsSourceData.customer}
+        checkedState={fieldsState.checkedCustomerState}
+        setCheckedState={fieldsState.setCheckedCustomerState}
+      />
+      <FieldsDropdown
+        buttonTitle="Line Items"
+        accessibilityId={'line-items-fields-dropdown'}
+        height="300px"
+        initialOpenState={false}
+        sourceData={fieldsSourceData.lineItems}
+        checkedState={fieldsState.checkedLineItemsState}
+        setCheckedState={fieldsState.setCheckedLineItemsState}
+      />
+      <FieldsDropdown
+        buttonTitle="Transactions"
+        accessibilityId={'transactions-fields-dropdown'}
+        height="120px"
+        initialOpenState={false}
+        sourceData={fieldsSourceData.transactions}
+        checkedState={fieldsState.checkedTransactionsState}
+        setCheckedState={fieldsState.setCheckedTransactionsState}
+      />
+      <FieldsDropdown
+        buttonTitle="Billing Address"
+        accessibilityId={'billing-address-fields-dropdown'}
+        height="240px"
+        initialOpenState={false}
+        sourceData={fieldsSourceData.billingAddress}
+        checkedState={fieldsState.checkedBillingAddressState}
+        setCheckedState={fieldsState.setCheckedBillingAddressState}
+      />
+      <FieldsDropdown
+        buttonTitle="Discount Codes"
+        accessibilityId={'discount-codes-fields-dropdown'}
+        height="100px"
+        initialOpenState={false}
+        sourceData={fieldsSourceData.discountCodes}
+        checkedState={fieldsState.checkedDiscountCodesState}
+        setCheckedState={fieldsState.setCheckedDiscountCodesState}
+      />
+      <FieldsDropdown
+        buttonTitle="Shipping Address"
+        accessibilityId={'shipping-address-fields-dropdown'}
+        height="240px"
+        initialOpenState={false}
+        sourceData={fieldsSourceData.shippingAddress}
+        checkedState={fieldsState.checkedShippingAddressState}
+        setCheckedState={fieldsState.setCheckedShippingAddressState}
+      />
+      <FieldsDropdown
+        buttonTitle="Shipping Lines"
+        accessibilityId={'shipping-lines-fields-dropdown'}
+        height="140px"
+        initialOpenState={false}
+        sourceData={fieldsSourceData.shippingLines}
+        checkedState={fieldsState.checkedShippingLinesState}
+        setCheckedState={fieldsState.setCheckedShippingLinesState}
+      />
+      <FieldsDropdown
+        buttonTitle="Tax Lines"
+        accessibilityId={'tax-lines-fields-dropdown'}
+        height="100px"
+        initialOpenState={false}
+        sourceData={fieldsSourceData.taxLines}
+        checkedState={fieldsState.checkedTaxLinesState}
+        setCheckedState={fieldsState.setCheckedTaxLinesState}
+      />
+      <FieldsDropdown
+        buttonTitle="Fulfillment"
+        accessibilityId={'fulfillment-fields-dropdown'}
+        height="120px"
+        initialOpenState={false}
+        sourceData={fieldsSourceData.fulfillment}
+        checkedState={fieldsState.checkedFulfillmentState}
+        setCheckedState={fieldsState.setCheckedFulfillmentState}
+      />
 
-      <Collapsible
-        open={openMain}
-        id="basic-collapsible"
-        transition={{ duration: '450ms', timingFunction: 'ease-in-out' }}
-        expandOnPrint
-      >
-        <Card.Section>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-start',
-              flexDirection: 'column',
-              height: '500px',
-              width: '100%',
-              flexWrap: 'wrap',
-            }}
-          >
-            {fieldData.main.map(({ value, name, description }, index) => {
-              return (
-                <div key={'main' + index} style={{ display: 'flex', maxWidth: '50%' }}>
-                  <div style={{ display: 'flex' }}>
-                    <Checkbox
-                      label={name}
-                      helpText={value}
-                      checked={checkedMainState[index]}
-                      onChange={() => handleMainChange(index)}
-                    />
-                    <div className={styles.tooltip}>
-                      <Icon source={InfoMinor} color="base" />
-                      <div
-                        className={styles.tooltiptext}
-                        dangerouslySetInnerHTML={{ __html: description }}
-                      ></div>
-                    </div>
-                    {/* <Tooltip content={description}>
-                      <div style={{ padding: '4px 7px' }}>
-                        <Icon source={InfoMinor} color="base" />
-                      </div>
-                    </Tooltip> */}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </Card.Section>
-      </Collapsible>
-
-      <Button
+      {/* <Button
         monochrome
         fullWidth
         disclosure={openCustomer ? 'up' : 'down'}
@@ -125,7 +148,7 @@ const FieldsCard = () => {
       <Collapsible
         open={openCustomer}
         id="basic-collapsible"
-        transition={{ duration: '450ms', timingFunction: 'ease-in-out' }}
+        transition={{ duration: '250ms', timingFunction: 'ease-in-out' }}
         expandOnPrint
       >
         <Card.Section>
@@ -139,13 +162,12 @@ const FieldsCard = () => {
               flexWrap: 'wrap',
             }}
           >
-            {fieldData.customer.map(({ value, name, description }, index) => {
+            {fieldsSourceData.customer.map(({ value, name, description }, index) => {
               return (
                 <div key={'customer' + index} style={{ display: 'flex', maxWidth: '50%' }}>
                   <div style={{ display: 'flex' }}>
                     <Checkbox
                       label={name}
-                      helpText={value}
                       checked={checkedCustomerState[index]}
                       onChange={handleCustomerChange}
                     />
@@ -156,11 +178,6 @@ const FieldsCard = () => {
                         dangerouslySetInnerHTML={{ __html: description }}
                       ></div>
                     </div>
-                    {/* <Tooltip content={description}>
-                      <div style={{ padding: '4px 7px' }}>
-                        <Icon source={InfoMinor} color="base" />
-                      </div>
-                    </Tooltip> */}
                   </div>
                 </div>
               );
@@ -183,7 +200,7 @@ const FieldsCard = () => {
       <Collapsible
         open={openDiscountCodes}
         id="basic-collapsible"
-        transition={{ duration: '450ms', timingFunction: 'ease-in-out' }}
+        transition={{ duration: '250ms', timingFunction: 'ease-in-out' }}
         expandOnPrint
       >
         <Card.Section>
@@ -197,13 +214,12 @@ const FieldsCard = () => {
               flexWrap: 'wrap',
             }}
           >
-            {fieldData.discountCodes.map(({ value, name, description }, index) => {
+            {fieldsSourceData.discountCodes.map(({ value, name, description }, index) => {
               return (
                 <div key={'discountCode' + index} style={{ display: 'flex', maxWidth: '50%' }}>
                   <div style={{ display: 'flex' }}>
                     <Checkbox
                       label={name}
-                      helpText={value}
                       checked={checkedDiscountCodesState[index]}
                       onChange={handleDiscountCodesChange}
                     />
@@ -214,42 +230,14 @@ const FieldsCard = () => {
                         dangerouslySetInnerHTML={{ __html: description }}
                       ></div>
                     </div>
-                    {/* <Tooltip content={description}>
-                      <div style={{ padding: '4px 7px' }}>
-                        <Icon source={InfoMinor} color="base" />
-                      </div>
-                    </Tooltip> */}
                   </div>
                 </div>
               );
             })}
           </div>
         </Card.Section>
-      </Collapsible>
+      </Collapsible> */}
     </Card>
-    // <Card>
-    //   <OptionList
-    //     onChange={setSelected}
-    //     sections={[
-    //       {
-    //         options: [
-    //           { value: 'type', label: 'Sale item type' },
-    //           { value: 'kind', label: 'Sale kind' },
-    //         ],
-    //       },
-    //       {
-    //         title: 'Traffic',
-    //         options: [
-    //           { value: 'source', label: 'Traffic referrer source' },
-    //           { value: 'host', label: 'Traffic referrer host' },
-    //           { value: 'path', label: 'Traffic referrer path' },
-    //         ],
-    //       },
-    //     ]}
-    //     selected={selected}
-    //     allowMultiple
-    //   />
-    // </Card>
   );
 };
 
