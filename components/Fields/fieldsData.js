@@ -15,14 +15,12 @@ export const fieldsSourceData = {
     {
       value: 'closed_at',
       name: 'Cancelled at',
-      description:
-        'The date and time when the order was closed. We recommend using ISO 8601 format when possible.  If the order was not closed, do not select this field.',
+      description: 'The date and time when the order was closed.',
     },
     {
       value: 'processed_at',
       name: 'Created at',
-      description:
-        'The date and time when the order was processed.  We recommend using ISO 8601 format when possible. This value c"an be set to dates in the past when importing from other systems. If no value i"s provided, it will be auto-generated based on the current date and time in Shopify.',
+      description: 'The date and time when the order was processed.',
     },
     {
       value: 'currency',
@@ -37,7 +35,7 @@ export const fieldsSourceData = {
     {
       value: 'email',
       name: 'Email',
-      description: "The customer's email address. Is required when a billing address is present.",
+      description: "The customer's email address.",
     },
     {
       value: 'financial_status',
@@ -54,14 +52,12 @@ export const fieldsSourceData = {
     {
       value: 'location_id',
       name: 'Location Id',
-      description:
-        'The ID of the physical location where the order was processed.  This has NO effect on the location of your fulfillments.',
+      description: 'The ID of the physical location where the order was processed.',
     },
     {
       value: 'note_attributes',
       name: 'Note Attributes',
-      description:
-        "Extra information that is added to the order. Each array entry must contain a hash with 'name' and 'value' \"keys.  An array of json documents are valid as well as the Shopify export format.",
+      description: 'Extra information that is added to the order.',
     },
     {
       value: 'note',
@@ -71,8 +67,7 @@ export const fieldsSourceData = {
     {
       value: 'phone',
       name: 'Phone',
-      description:
-        'The unique phone number (E.164 format)  for this customer. Attempting to assign the same phone number to multiple customers returns an error. The property can be set using different formats, but each format must represent a number that can be dialed from anywhere in the world. <br><br>At this time Shopify allows the following formats when importing a customer phone number with your order: <br><ul><li>6135551212</li><li>+16135551212</li><li>(613)555-1212</li><li>+1 613-555-1212</li></ul>',
+      description: 'The unique phone number (E.164 format) for this customer.',
     },
     {
       value: 'referring_site',
@@ -88,13 +83,12 @@ export const fieldsSourceData = {
     {
       value: 'total_tax',
       name: 'Taxes',
-      description: 'The sum of all the taxes applied to the order (must be positive).',
+      description: 'The sum of all the taxes applied to the order.',
     },
     {
       value: 'taxes_included',
       name: 'Taxes Included',
-      description:
-        "States whether or not taxes are included in the order subtotal. Valid values are 'true' or 'false.'",
+      description: 'Whether or not taxes are included in the order subtotal.',
     },
     {
       value: 'total_weight',
@@ -121,7 +115,7 @@ export const fieldsSourceData = {
     {
       value: 'customer.phone',
       name: 'Phone',
-      description: `The unique phone number (E.164 format) for this customer. Attempting to assign the same phone number to multiple customers returns an error. The property can be set using different formats, but each format must represent a number that can be dialed from anywhere in the world. <br><br>At this time Shopify allows the following formats when importing a customer phone number with your order: <br><ul><li>6135551212</li><li>+16135551212</li><li>(613)555-1212</li><li>+1 613-555-1212</li></ul>`,
+      description: `The unique phone number (E.164 format) for this customer.`,
     },
     {
       value: 'customer.note',
@@ -132,22 +126,22 @@ export const fieldsSourceData = {
   lineItems: [
     {
       value: 'line_items.title',
-      name: 'Lineitem name',
+      name: 'Lineitem Name',
       description: `The title of the product.`,
     },
     {
       value: 'line_items.price',
-      name: 'Lineitem price',
+      name: 'Lineitem Price',
       description: `The price of the item before discounts have been applied.`,
     },
     {
       value: 'line_items.quantity',
-      name: 'Lineitem quantity',
+      name: 'Lineitem Quantity',
       description: `The number of products that were purchased.`,
     },
     {
       value: 'line_items.fulfillment_status',
-      name: 'Lineitem fulfillment status',
+      name: 'Lineitem Fulfillment Status',
       description: `How far along an order is in terms line items fulfilled. Valid values are: fulfilled, unfulfilled or partial.`,
     },
     {
@@ -162,7 +156,7 @@ export const fieldsSourceData = {
     },
     {
       value: 'line_items.sku',
-      name: 'Lineitem sku',
+      name: 'Lineitem Sku',
       description: `A unique identifier of the item in the fulfillment.`,
     },
     {
@@ -177,7 +171,7 @@ export const fieldsSourceData = {
     },
     {
       value: 'line_items.requires_shipping',
-      name: 'Lineitem requires shipping',
+      name: 'Lineitem Requires Shipping',
       description: ` States whether or not the fulfillment requires shipping. Values are: true or false.`,
     },
     {
@@ -202,18 +196,18 @@ export const fieldsSourceData = {
     },
     {
       value: 'line_items.taxable',
-      name: 'Lineitem taxable',
+      name: 'Lineitem Taxable',
       description: `States whether or not the product was taxable. Values are: true or false.`,
     },
     {
       value: 'line_items.total_discount',
-      name: 'Lineitem discount',
-      description: `The total discount amount applied to this line item. This value i"s not subtracted in the line item price.`,
+      name: 'Lineitem Discount',
+      description: `The total discount amount applied to this line item. This value is not subtracted in the line item price.`,
     },
     {
       value: 'line_items.properties',
       name: 'Lineitem Properties',
-      description: `An array of custom information for an item that has been added to the cart. Often used to provide product customization options.  Each array entry must contain a hash with 'name' and 'value' "keys.  An array of json documents are valid as well as the Shopify export format.`,
+      description: `An array of custom information for an item that has been added to the cart. Often used to provide product customization options.`,
     },
   ],
   transactions: [
@@ -230,7 +224,7 @@ export const fieldsSourceData = {
     {
       value: 'transactions.status',
       name: 'Transaction Status',
-      description: `The status of the transaction. Valid values are:<br> <ul><li>pending</li><li>failure</li><li>success</li><li>error</li></ul>.`,
+      description: `The status of the transaction. Valid values are:<br> <ul><li>pending</li><li>failure</li><li>success</li><li>error</li></ul>`,
     },
     {
       value: 'transactions.kind',

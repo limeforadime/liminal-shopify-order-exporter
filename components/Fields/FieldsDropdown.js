@@ -1,4 +1,4 @@
-import { TextStyle, ResourceItem, Card, Checkbox, Collapsible, Button, Icon } from '@shopify/polaris';
+import { Card, Checkbox, Collapsible, Button, Icon } from '@shopify/polaris';
 import { InfoMinor } from '@shopify/polaris-icons';
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from './FieldsCard.module.css';

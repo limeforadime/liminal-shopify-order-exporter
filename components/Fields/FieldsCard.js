@@ -1,45 +1,11 @@
-import {
-  Tag,
-  Card,
-  Checkbox,
-  Collapsible,
-  OptionList,
-  Button,
-  Tooltip,
-  Icon,
-  ButtonGroup,
-  Stack,
-  TextContainer,
-  Popover,
-  ChoiceList,
-  Subheading,
-  Layout,
-} from '@shopify/polaris';
-import { InfoMinor } from '@shopify/polaris-icons';
-import React, { useCallback, useEffect, useState, useContext } from 'react';
+import { Card } from '@shopify/polaris';
+import React, { useContext } from 'react';
 import { fieldsSourceData } from './fieldsData';
-import styles from './FieldsCard.module.css';
 import FieldsDropdown from './FieldsDropdown';
 import { FieldsStateContext } from './FieldsStateWrapper';
 
 const FieldsCard = () => {
-  const [openCustomer, setOpenCustomer] = useState(false);
-  const [openDiscountCodes, setOpenDiscountCodes] = useState(false);
   const fieldsState = useContext(FieldsStateContext);
-
-  const handleCustomerToggle = useCallback(() => setOpenCustomer((open) => !open), []);
-  const handleDiscountCodesToggle = useCallback(() => setOpenDiscountCodes((open) => !open), []);
-
-  const handleCustomerChange = (position) => {
-    const updatedCheckedState = checkedCustomerState.map((item, index) => (index === position ? item : item));
-    setCheckedCustomerState(updatedCheckedState);
-  };
-  const handleDiscountCodesChange = (position) => {
-    const updatedCheckedState = checkedDiscountCodesState.map((item, index) =>
-      index === position ? item : item
-    );
-    setCheckedDiscountCodesState(updatedCheckedState);
-  };
 
   return (
     <Card title="Select Fields" sectioned>
@@ -133,110 +99,6 @@ const FieldsCard = () => {
         checkedState={fieldsState.checkedFulfillmentState}
         setCheckedState={fieldsState.setCheckedFulfillmentState}
       />
-
-      {/* <Button
-        monochrome
-        fullWidth
-        disclosure={openCustomer ? 'up' : 'down'}
-        textAlign="left"
-        onClick={handleCustomerToggle}
-        ariaExpanded={openCustomer}
-        ariaControls="basic-collapsible"
-      >
-        Customer
-      </Button>
-      <Collapsible
-        open={openCustomer}
-        id="basic-collapsible"
-        transition={{ duration: '250ms', timingFunction: 'ease-in-out' }}
-        expandOnPrint
-      >
-        <Card.Section>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-start',
-              flexDirection: 'column',
-              height: '180px',
-              width: '100%',
-              flexWrap: 'wrap',
-            }}
-          >
-            {fieldsSourceData.customer.map(({ value, name, description }, index) => {
-              return (
-                <div key={'customer' + index} style={{ display: 'flex', maxWidth: '50%' }}>
-                  <div style={{ display: 'flex' }}>
-                    <Checkbox
-                      label={name}
-                      checked={checkedCustomerState[index]}
-                      onChange={handleCustomerChange}
-                    />
-                    <div className={styles.tooltip}>
-                      <Icon source={InfoMinor} color="base" />
-                      <div
-                        className={styles.tooltiptext}
-                        dangerouslySetInnerHTML={{ __html: description }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </Card.Section>
-      </Collapsible>
-
-      <Button
-        monochrome
-        fullWidth
-        disclosure={openDiscountCodes ? 'up' : 'down'}
-        textAlign="left"
-        onClick={handleDiscountCodesToggle}
-        ariaExpanded={openDiscountCodes}
-        ariaControls="basic-collapsible"
-      >
-        Discount Codes
-      </Button>
-      <Collapsible
-        open={openDiscountCodes}
-        id="basic-collapsible"
-        transition={{ duration: '250ms', timingFunction: 'ease-in-out' }}
-        expandOnPrint
-      >
-        <Card.Section>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-start',
-              flexDirection: 'column',
-              height: '180px',
-              width: '100%',
-              flexWrap: 'wrap',
-            }}
-          >
-            {fieldsSourceData.discountCodes.map(({ value, name, description }, index) => {
-              return (
-                <div key={'discountCode' + index} style={{ display: 'flex', maxWidth: '50%' }}>
-                  <div style={{ display: 'flex' }}>
-                    <Checkbox
-                      label={name}
-                      checked={checkedDiscountCodesState[index]}
-                      onChange={handleDiscountCodesChange}
-                    />
-                    <div className={styles.tooltip}>
-                      <Icon source={InfoMinor} color="base" />
-                      <div
-                        className={styles.tooltiptext}
-                        dangerouslySetInnerHTML={{ __html: description }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </Card.Section>
-      </Collapsible> */}
     </Card>
   );
 };

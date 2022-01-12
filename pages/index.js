@@ -1,25 +1,10 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import {
-  EmptyState,
-  Button,
-  Card,
-  Frame,
-  Toast,
-  Collapsible,
-  Page,
-  Layout,
-  Stack,
-  DatePicker,
-  List,
-  Tag,
-  Subheading,
-} from '@shopify/polaris';
+import { Button, Card, Frame, Toast, Collapsible, Page, Layout, Stack, List } from '@shopify/polaris';
 import { useAppBridge } from '@shopify/app-bridge-react';
 import { Redirect } from '@shopify/app-bridge/actions';
 import userLoggedInFetch from '../utils/client/userLoggedInFetch';
 import { AppStateContext } from '../components/AppStateWrapper';
 import { useRouter } from 'next/router';
-// debug vvv
 import jwtDecode from 'jwt-decode';
 import { getSessionToken } from '@shopify/app-bridge-utils';
 import { fieldsSourceData } from '../components/Fields/fieldsData';
@@ -32,6 +17,7 @@ const Index = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [openDebugButtons, setOpenDebugButtons] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]); // for Filtering
+
   /* Checked Fields State */
   const [checkedMainState, setCheckedMainState] = useState(
     new Array(fieldsSourceData.main.length).fill(false)
@@ -88,9 +74,26 @@ const Index = () => {
 
   const appState = useContext(AppStateContext);
   const { shop } = appState;
-  const router = useRouter();
   const app = useAppBridge();
   const redirect = Redirect.create(app);
+
+  useEffect(() => {
+    if (typeof Storage !== 'undefined') {
+      let localStorageDefaultState = JSON.parse(localStorage.getItem('checkedFieldsState'));
+      if (localStorageDefaultState != null) {
+        setCheckedMainState(localStorageDefaultState.checkedMainState);
+        setCheckedCustomerState(localStorageDefaultState.checkedCustomerState);
+        setCheckedLineItemsState(localStorageDefaultState.checkedLineItemsState);
+        setCheckedTransactionsState(localStorageDefaultState.checkedTransactionsState);
+        setCheckedBillingAddressState(localStorageDefaultState.checkedBillingAddressState);
+        setCheckedDiscountCodesState(localStorageDefaultState.checkedDiscountCodesState);
+        setCheckedShippingAddressState(localStorageDefaultState.checkedShippingAddressState);
+        setCheckedShippingLinesState(localStorageDefaultState.checkedShippingLinesState);
+        setCheckedTaxLinesState(localStorageDefaultState.checkedTaxLinesState);
+        setCheckedFulfillmentState(localStorageDefaultState.checkedFulfillmentState);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const checkIfSessionActive = async () => {
@@ -108,21 +111,23 @@ const Index = () => {
 
   // Set localstorage on every update to checkedState
   useEffect(() => {
-    localStorage.setItem(
-      'checkedFieldsState',
-      JSON.stringify({
-        checkedMainState,
-        checkedCustomerState,
-        checkedLineItemsState,
-        checkedTransactionsState,
-        checkedBillingAddressState,
-        checkedDiscountCodesState,
-        checkedShippingAddressState,
-        checkedShippingLinesState,
-        checkedTaxLinesState,
-        checkedFulfillmentState,
-      })
-    );
+    if (typeof Storage !== 'undefined') {
+      localStorage.setItem(
+        'checkedFieldsState',
+        JSON.stringify({
+          checkedMainState,
+          checkedCustomerState,
+          checkedLineItemsState,
+          checkedTransactionsState,
+          checkedBillingAddressState,
+          checkedDiscountCodesState,
+          checkedShippingAddressState,
+          checkedShippingLinesState,
+          checkedTaxLinesState,
+          checkedFulfillmentState,
+        })
+      );
+    }
   }, [
     checkedMainState,
     checkedCustomerState,

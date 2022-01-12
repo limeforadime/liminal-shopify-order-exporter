@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Spinner,
   Toast,
   Frame,
-  // Loading,
   SkeletonPage,
   Layout,
   Card,
@@ -31,12 +29,9 @@ const AppStateWrapper = ({ children }) => {
   useEffect(() => {
     async function getShop() {
       try {
-        console.log(`AppStateWrapper, getting shop:`);
         const res = await getSessionToken(app);
         const decoded = jwtDecode(res);
         setShop(decoded.dest.replace(/https:\/\//, ''));
-        console.log(`JWT from useEffect(): `);
-        console.log(decoded);
         console.log(`Shop successfully set as: ${decoded.dest.replace(/https:\/\//, '')}`);
       } catch (e) {
         console.log(e);

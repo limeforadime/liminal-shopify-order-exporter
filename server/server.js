@@ -110,11 +110,9 @@ app.prepare().then(() => {
     '/graphql',
     // forcedFailMiddleware,
     async (ctx, next) => {
-      console.log('JWT received by server:');
-      console.log(ctx.get('Authorization'));
       await next();
     },
-    // verifyRequest({ returnHeader: true }),
+    verifyRequest({ returnHeader: true }),
     async (ctx, next) => {
       await Shopify.Utils.graphqlProxy(ctx.req, ctx.res);
     }
@@ -141,8 +139,6 @@ app.prepare().then(() => {
 
       if (findShopCount < 1) {
         console.log('(*) route: didnt find shop, redirecting to /auth?shop=shop');
-        // console.log(`In router.get((.*)), deleting sessions with shop: ${shop}`);
-        // await SessionModel.deleteMany({ shop }).clone();
         ctx.redirect(`/auth?shop=${shop}`);
       } else {
         console.log('(*) route: successful, handling request now');
