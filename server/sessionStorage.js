@@ -47,7 +47,17 @@ const loadCallback = async (id) => {
     const sessionResult = await SessionModel.findOne({ id });
     if (sessionResult) {
       logger.info('sessionStorage->loadCallback: ', 'Loaded session model');
-      return JSON.parse(cryption.decrypt(sessionResult.content));
+      let session = JSON.parse(cryption.decrypt(sessionResult.content));
+      session.isActive = function () {
+        const { scope, accessToken, expires } = this;
+        if (Shopify.Context.SCOPES.equals(scope) && accessToken && (!expires || expires >= new Date())) {
+          return true;
+        } else {
+          return false;
+        }
+      };
+      console.log(Object.entries(session));
+      return session;
       // return JSON.parse(sessionResult.content);
     } else {
       return undefined;

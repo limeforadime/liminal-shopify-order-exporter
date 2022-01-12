@@ -3,7 +3,7 @@ import 'regenerator-runtime/runtime';
 import 'isomorphic-fetch';
 import next from 'next';
 import Koa from 'koa';
-import createShopifyAuth, { verifyRequest } from '@shopify/koa-shopify-auth';
+import { createShopifyAuth, verifyRequest } from 'simple-koa-shopify-auth';
 import Shopify, { ApiVersion } from '@shopify/shopify-api';
 import Router from '@koa/router';
 
@@ -35,7 +35,6 @@ Shopify.Context.initialize({
   API_VERSION: ApiVersion.October21,
   IS_EMBEDDED_APP: true,
   SESSION_STORAGE: sessionStorage,
-  // SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
 });
 
 const port = parseInt(process.env.PORT, 10) || 8081;
@@ -55,7 +54,6 @@ app.prepare().then(() => {
       async afterAuth(ctx) {
         console.log('reached afterAuth()');
         console.log('attempting to retrieve session...');
-        // const session = await Shopify.Utils.loadCurrentSession(ctx.req, ctx.res, true);
         const session = ctx.state.shopify;
         const { shop, accessToken } = session;
         console.log('shop: ', shop);
@@ -72,43 +70,9 @@ app.prepare().then(() => {
       },
     })
   );
-  // router.get('/auth', async (ctx) => {
-  //   try {
-  //     const { shop } = ctx.query;
-  //     console.log(`In /auth. shop: ${shop}`);
-  //     let authRoute = await Shopify.Auth.beginAuth(ctx.req, ctx.res, shop, '/auth/callback');
-  //     console.log(`authRoute: ${authRoute}`);
-  //     ctx.redirect(authRoute);
-  //   } catch (err) {
-  //     console.error('/auth: Failed to complete OAuth process');
-  //     console.error(err);
-  //   }
-  // });
-
-  // router.get('/auth/callback', async (ctx) => {
-  //   const { shop, host } = ctx.query;
-  //   try {
-  //     console.log('reached /auth/callback');
-  //     console.log(`shop: ${shop}`);
-  //     console.log(`host: ${host}`);
-
-  //     const session = await Shopify.Auth.validateAuthCallback(ctx.req, ctx.res, ctx.query);
-  //     const { accessToken } = session;
-  //     // await appUninstallWebhook(shop, accessToken);
-  //     // await collectionsCreateWebhook(shop, accessToken);
-  //     await createOrUpdateShopEntry(shop);
-  //     // ctx.redirect(`${process.env.HOST}?shop=${shop}&host=${host}`);
-  //     console.log();
-  //     ctx.redirect(`/?shop=${shop}&host=${host}`);
-  //   } catch (err) {
-  //     console.error('/auth/callback: Failed to complete OAuth process');
-  //     console.log(err);
-  //   }
-  // });
 
   router.post(
     '/graphql',
-    // forcedFailMiddleware,
     async (ctx, next) => {
       await next();
     },
@@ -117,11 +81,13 @@ app.prepare().then(() => {
       await Shopify.Utils.graphqlProxy(ctx.req, ctx.res);
     }
   );
+
   const handleRequest = async (ctx) => {
     await handle(ctx.req, ctx.res);
     ctx.respond = false;
     ctx.res.statusCode = 200;
   };
+
   server.use(userRoutes());
   server.use(webhookRouters());
 

@@ -52,7 +52,6 @@
     "@shopify/app-bridge": "^2.0.5",
     "@shopify/app-bridge-react": "^2.0.5",
     "@shopify/app-bridge-utils": "^2.0.5",
-    "@shopify/koa-shopify-auth": "github:limeforadime/koa-shopify-auth-after-shopify-api-2.0",
     "@shopify/koa-shopify-webhooks": "^4.2.1",
     "@shopify/polaris": "^7.5.0",
     "@shopify/polaris-icons": "^4.11.0",
@@ -75,6 +74,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "regenerator-runtime": "^0.13.9",
+    "simple-koa-shopify-auth": "^1.0.3",
     "store-js": "^2.0.4",
     "webpack": "^5.65.0"
   },
