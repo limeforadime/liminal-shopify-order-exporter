@@ -14,6 +14,7 @@ const FieldsDropdown = ({
 }) => {
   const [openState, setOpenState] = useState(initialOpenState);
   const [totalChecked, setTotalChecked] = useState(checkedState.filter((val) => val == true).length);
+  const [minWidthMatches, setMinWidthMatches] = useState(false);
 
   const handleChange = (position) => {
     const updatedCheckedState = checkedState.map((item, index) => (index === position ? !item : item));
@@ -30,6 +31,10 @@ const FieldsDropdown = ({
       setCheckedState(new Array(checkedState.length).fill(true));
     }
   });
+
+  useEffect(() => {
+    window.matchMedia('(min-width: 35em)').addEventListener('change', (e) => setMinWidthMatches(e.matches));
+  }, []);
   useEffect(() => {
     setTotalChecked(checkedState.filter((val) => val == true).length);
   }, [checkedState]);
@@ -57,18 +62,13 @@ const FieldsDropdown = ({
         <Card.Section subdued>
           <Checkbox checked="indeterminate" label="Select/Deselect All" onChange={handleSelectAll} />
           <div
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-start',
-              flexDirection: 'column',
-              height: height,
-              width: '100%',
-              flexWrap: 'wrap',
-            }}
+            id={accessibilityId}
+            className={styles.checkboxContainer}
+            style={{ height: minWidthMatches && height }}
           >
             {sourceData.map(({ value, name, description }, index) => {
               return (
-                <div key={index} style={{ display: 'flex', maxWidth: '50%' }}>
+                <div key={index} /* style={{ display: 'flex', maxWidth: '50%' }} */>
                   <div style={{ display: 'flex' }}>
                     <Checkbox
                       label={name}

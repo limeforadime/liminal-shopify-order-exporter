@@ -17,3 +17,15 @@
 .tooltip:hover .tooltiptext {
   visibility: visible;
 }
+.checkboxContainer {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  width: 100%;
+  flex-wrap: nowrap;
+}
+@media (min-width: 35em) {
+  .checkboxContainer {
+    flex-wrap: wrap;
+  }
+}

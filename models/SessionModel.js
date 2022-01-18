@@ -3,8 +3,9 @@
  */
 
 import mongoose from 'mongoose';
+const { Schema } = mongoose;
 
-const sessionSchema = new mongoose.Schema({
+const sessionSchema = new Schema({
   id: {
     type: String,
     required: true,

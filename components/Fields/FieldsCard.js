@@ -12,7 +12,7 @@ const FieldsCard = () => {
       <FieldsDropdown
         buttonTitle="Order Fields"
         accessibilityId={'main-fields-dropdown'}
-        height="300px"
+        height="320px"
         initialOpenState={true}
         sourceData={fieldsSourceData.main}
         checkedState={fieldsState.checkedMainState}
@@ -21,7 +21,7 @@ const FieldsCard = () => {
       <FieldsDropdown
         buttonTitle="Customer"
         accessibilityId={'customer-fields-dropdown'}
-        height="100px"
+        height="125px"
         initialOpenState={false}
         sourceData={fieldsSourceData.customer}
         checkedState={fieldsState.checkedCustomerState}
@@ -30,7 +30,7 @@ const FieldsCard = () => {
       <FieldsDropdown
         buttonTitle="Line Items"
         accessibilityId={'line-items-fields-dropdown'}
-        height="300px"
+        height="320px"
         initialOpenState={false}
         sourceData={fieldsSourceData.lineItems}
         checkedState={fieldsState.checkedLineItemsState}
@@ -39,7 +39,7 @@ const FieldsCard = () => {
       <FieldsDropdown
         buttonTitle="Transactions"
         accessibilityId={'transactions-fields-dropdown'}
-        height="120px"
+        height="130px"
         initialOpenState={false}
         sourceData={fieldsSourceData.transactions}
         checkedState={fieldsState.checkedTransactionsState}
@@ -48,7 +48,7 @@ const FieldsCard = () => {
       <FieldsDropdown
         buttonTitle="Billing Address"
         accessibilityId={'billing-address-fields-dropdown'}
-        height="240px"
+        height="250px"
         initialOpenState={false}
         sourceData={fieldsSourceData.billingAddress}
         checkedState={fieldsState.checkedBillingAddressState}
@@ -57,7 +57,7 @@ const FieldsCard = () => {
       <FieldsDropdown
         buttonTitle="Discount Codes"
         accessibilityId={'discount-codes-fields-dropdown'}
-        height="100px"
+        height="120px"
         initialOpenState={false}
         sourceData={fieldsSourceData.discountCodes}
         checkedState={fieldsState.checkedDiscountCodesState}
@@ -66,7 +66,7 @@ const FieldsCard = () => {
       <FieldsDropdown
         buttonTitle="Shipping Address"
         accessibilityId={'shipping-address-fields-dropdown'}
-        height="240px"
+        height="250px"
         initialOpenState={false}
         sourceData={fieldsSourceData.shippingAddress}
         checkedState={fieldsState.checkedShippingAddressState}
@@ -75,7 +75,7 @@ const FieldsCard = () => {
       <FieldsDropdown
         buttonTitle="Shipping Lines"
         accessibilityId={'shipping-lines-fields-dropdown'}
-        height="140px"
+        height="150px"
         initialOpenState={false}
         sourceData={fieldsSourceData.shippingLines}
         checkedState={fieldsState.checkedShippingLinesState}
@@ -84,7 +84,7 @@ const FieldsCard = () => {
       <FieldsDropdown
         buttonTitle="Tax Lines"
         accessibilityId={'tax-lines-fields-dropdown'}
-        height="100px"
+        height="120px"
         initialOpenState={false}
         sourceData={fieldsSourceData.taxLines}
         checkedState={fieldsState.checkedTaxLinesState}
@@ -93,7 +93,7 @@ const FieldsCard = () => {
       <FieldsDropdown
         buttonTitle="Fulfillment"
         accessibilityId={'fulfillment-fields-dropdown'}
-        height="120px"
+        height="130px"
         initialOpenState={false}
         sourceData={fieldsSourceData.fulfillment}
         checkedState={fieldsState.checkedFulfillmentState}

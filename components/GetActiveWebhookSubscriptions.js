@@ -32,7 +32,8 @@ export default function GetActiveWebhookSubscriptions() {
 
   const handleRedirect = useCallback(async () => {
     // redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
-    redirect.dispatch(Redirect.Action.APP, `/`);
+    // redirect.dispatch(Redirect.Action.APP, `/`);
+    router.push('/');
     // router.reload();
   });
 
@@ -78,19 +79,11 @@ export default function GetActiveWebhookSubscriptions() {
       <Button
         size="large"
         onClick={() => {
-          router.push('/');
+          // router.push('/');
+          redirect.dispatch(Redirect.Action.APP, `/`);
         }}
       >
         Home
-      </Button>
-      <Button
-        size="large"
-        onClick={() => {
-          console.log('reloading...');
-          router.reload();
-        }}
-      >
-        Reload
       </Button>
     </Card>
   );

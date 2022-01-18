@@ -2,8 +2,10 @@
  * Model to store transactional IDs irrespective of current store status.
  */
 import mongoose from 'mongoose';
+const { Schema } = mongoose;
+import { profileSchema } from './ProfileModel';
 
-const StoreDetailsSchema = new mongoose.Schema(
+const StoreDetailsSchema = new Schema(
   {
     shop: {
       type: String,
@@ -13,6 +15,7 @@ const StoreDetailsSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    profiles: [profileSchema],
   },
   { timestamps: true }
 );

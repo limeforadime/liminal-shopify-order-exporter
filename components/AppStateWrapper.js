@@ -45,6 +45,7 @@ const AppStateWrapper = ({ children }) => {
   });
   Router.events.on('routeChangeComplete', (url) => {
     setIsPageLoading(false);
+    console.log('@route change complete!@');
   });
   Router.events.on('routeChangeError', (err) => {
     console.error(err, 'Route Change Error');
@@ -80,7 +81,7 @@ const AppStateWrapper = ({ children }) => {
       <React.Fragment>
         <div style={loadingPage}>
           <div>
-            <SkeletonPage primaryAction secondaryActions={2}>
+            <SkeletonPage primaryAction>
               <Layout>
                 <Layout.Section>
                   <Card sectioned>

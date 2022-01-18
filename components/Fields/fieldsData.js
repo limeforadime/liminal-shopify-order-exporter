@@ -126,62 +126,62 @@ export const fieldsSourceData = {
   lineItems: [
     {
       value: 'line_items.title',
-      name: 'Lineitem Name',
+      name: 'Line Item Name',
       description: `The title of the product.`,
     },
     {
       value: 'line_items.price',
-      name: 'Lineitem Price',
+      name: 'Line Item Price',
       description: `The price of the item before discounts have been applied.`,
     },
     {
       value: 'line_items.quantity',
-      name: 'Lineitem Quantity',
+      name: 'Line Item Quantity',
       description: `The number of products that were purchased.`,
     },
     {
       value: 'line_items.fulfillment_status',
-      name: 'Lineitem Fulfillment Status',
-      description: `How far along an order is in terms line items fulfilled. Valid values are: fulfilled, unfulfilled or partial.`,
+      name: 'Line Item Fulfillment Status',
+      description: `How far along an order is in terms line items fulfilled. Valid values are: shipped, unfulfilled or partial.`,
     },
     {
       value: 'line_items.fulfillable_quantity',
-      name: 'Lineitem Fulfillable Quantity',
+      name: 'Line Item Fulfillable Quantity',
       description: `The amount available to fulfill. This is the quantity - max(refunded_quantity, fulfilled_quantity) - pending_fulfilled_quantity - open_fulfilled_quantity.)`,
     },
     {
       value: 'line_items.fulfillment_service',
-      name: 'Lineitem Fulfillment Service',
-      description: ` Service provider who is doing the fulfillment. Valid values are either 'manual' or the name of the provider. eg: 'amazon', 'shipwire', etc.`,
+      name: 'Line Item Fulfillment Service',
+      description: `Service provider who is doing the fulfillment. Valid values are either 'manual' or the name of the provider. eg: 'amazon', 'shipwire', etc.`,
     },
     {
       value: 'line_items.sku',
-      name: 'Lineitem Sku',
+      name: 'Line Item Sku',
       description: `A unique identifier of the item in the fulfillment.`,
     },
     {
       value: 'line_items.grams',
-      name: 'Lineitem Grams',
+      name: 'Line Item Grams',
       description: `The weight of the item in grams.`,
     },
     {
       value: 'line_items.product_id',
-      name: 'Lineitem Product ID',
-      description: `The unique numeric identifier for the product in the fulfillment.`,
+      name: 'Line Item Product ID',
+      description: `The ID of the product that the line item belongs to.`,
     },
     {
       value: 'line_items.requires_shipping',
-      name: 'Lineitem Requires Shipping',
-      description: ` States whether or not the fulfillment requires shipping. Values are: true or false.`,
+      name: 'Line Item Requires Shipping',
+      description: `Whether the item requires shipping.`,
     },
     {
       value: 'line_items.variant_id',
-      name: 'Lineitem Variant ID',
+      name: 'Line Item Variant ID',
       description: `The id of the product variant.`,
     },
     {
       value: 'line_items.variant_title',
-      name: 'Lineitem Variant Title',
+      name: 'Line Item Variant Title',
       description: `The title of the product variant.`,
     },
     {
@@ -191,25 +191,27 @@ export const fieldsSourceData = {
     },
     {
       value: 'line_items.gift_card',
-      name: 'Lineitem Gift Card',
+      name: 'Line Item Gift Card',
       description: `States whether or not the line_item is a gift card. If so, the item is not taxed or considered for shipping charges.`,
     },
     {
       value: 'line_items.taxable',
-      name: 'Lineitem Taxable',
+      name: 'Line Item Taxable',
       description: `States whether or not the product was taxable. Values are: true or false.`,
     },
     {
       value: 'line_items.total_discount',
-      name: 'Lineitem Discount',
+      name: 'Line Item Discount',
       description: `The total discount amount applied to this line item. This value is not subtracted in the line item price.`,
     },
     {
       value: 'line_items.properties',
-      name: 'Lineitem Properties',
+      name: 'Line Item Properties',
       description: `An array of custom information for an item that has been added to the cart. Often used to provide product customization options.`,
     },
   ],
+  // TODO: Transactions must be retrieved as its own request based on the order id. Doesn't come included in the Orders api.
+  // /admin/api/2022-01/orders/{order_id}/transactions.json
   transactions: [
     {
       value: 'transactions.amount',
@@ -238,8 +240,8 @@ export const fieldsSourceData = {
     },
     {
       value: 'transactions.processed_at',
-      name: 'Paid at',
-      description: `The date and time (ISO 8601 format) when a transaction was processed. This value i"s the date that's used in the analytic reports. By default, it matches the created_at value. "If you're importing transactions from an app or another platform, then you can set processed_at to a date and time in the past to match when the original transaction was processed.`,
+      name: 'Paid At',
+      description: `The date and time (ISO 8601 format) when a transaction was processed. This value is the date that's used in the analytic reports. By default, it matches the created_at value.`,
     },
   ],
   billingAddress: [
@@ -308,12 +310,14 @@ export const fieldsSourceData = {
       name: 'Billing Country Code',
       description: `The two-letter code (ISO 3166-1 alpha-2 two-letter country code) for the country of the billing address.)`,
     },
-    {
-      value: 'billing_address.default',
-      name: 'Billing Default',
-      description: `Default billing address.  Valid values are true or false.`,
-    },
+    // TODO: Invalid. Find equivalent
+    // {
+    //   value: 'billing_address.default',
+    //   name: 'Billing Is Default',
+    //   description: `Default billing address. Valid values are true or false.`,
+    // },
   ],
+  // TODO: discount_codes actually returns an array now
   discountCodes: [
     {
       value: 'discount_codes.amount',
@@ -408,11 +412,28 @@ export const fieldsSourceData = {
       description: `The two-letter abbreviation of the state or province of the shipping address.`,
     },
   ],
+  // TODO: The API has more values than are listed here
+  // returns array
   shippingLines: [
     {
+      value: 'shipping_lines.code',
+      name: 'Shipping Method Code',
+      description: `A reference to the shipping method.`,
+    },
+    {
+      value: 'shipping_lines.discounted_price',
+      name: 'Shipping Discounted Price',
+      description: `The price of the shipping method after line-level discounts have been applied. Doesn't reflect cart-level or order-level discounts.`,
+    },
+    {
       value: 'shipping_lines.price',
-      name: 'Shipping',
+      name: 'Shipping Price',
       description: `The price of this shipping method.`,
+    },
+    {
+      value: 'shipping_lines.source',
+      name: 'Shipping Method Source',
+      description: `The source of the shipping method.`,
     },
     {
       value: 'shipping_lines.title',
@@ -420,14 +441,14 @@ export const fieldsSourceData = {
       description: `The title of the shipping method.`,
     },
     {
-      value: 'shipping_lines.code',
-      name: 'Shipping Method Code',
-      description: `A reference to the shipping method.`,
+      value: 'shipping_lines.carrier_identifier',
+      name: 'Shipping Carrier Identifier',
+      description: `A reference to the carrier service that provided the rate. Present when the rate was computed by a third-party carrier service.`,
     },
     {
-      value: 'shipping_lines.source',
-      name: 'Shipping Method Source',
-      description: `The source of the shipping method.`,
+      value: 'shipping_lines.requested_fulfillment_service_id',
+      name: 'Shipping Requested Fulfillment Service Id',
+      description: `A reference to the fulfillment service that is being requested for the shipping method. Present if the shipping method requires processing by a third party fulfillment service; null otherwise.`,
     },
   ],
   taxLines: [
@@ -446,7 +467,15 @@ export const fieldsSourceData = {
       name: 'Tax Line Name',
       description: `The name of the tax`,
     },
+    {
+      value: 'tax_lines.channel_liable',
+      name: 'Tax Line Channel Liable',
+      description:
+        'Whether the channel that submitted the tax line is liable for remitting. A value of null indicates unknown liability for the tax line.',
+    },
   ],
+  // https://shopify.dev/api/admin-rest/2022-01/resources/fulfillment#resource_object
+  // TODO: The shape of the data here's a little weird. Verify each field
   fulfillment: [
     {
       value: 'fulfillment_orders.assigned_location_id',
@@ -456,7 +485,7 @@ export const fieldsSourceData = {
     {
       value: 'fulfillments.tracking_company',
       name: 'Tracking Company',
-      description: `The name of the tracking company.<br><br> When creating a fulfillment for a supported carrier, send the tracking_company exactly as listed in our documentation. If the tracking company doesn't match one of the supported entries, then the shipping status might not be updated properly during the fulfillment process.  If you do not know the tracking company or if the tracking company is not supported by Shopify set it to Other.`,
+      description: `The name of the tracking company.`,
     },
     {
       value: 'fulfillments.tracking_numbers',
@@ -464,9 +493,9 @@ export const fieldsSourceData = {
       description: `Tracking numbers, provided by the shipping company.<br><br>It is highly recommended that you send the tracking company and/or the tracking URL as well. If neither one of these is sent, then the tracking company will be determined automatically. This can result in an invalid tracking URL.<br>When accounts are enabled, it is also displayed in the customer's order history.`,
     },
     {
-      value: 'fulfillments.tracking_url',
-      name: 'Tracking URL',
-      description: `The URLs of tracking pages for the fulfillment.  If left blank, Shopify will automatically generate the tracking url based on your tracking number and company.`,
+      value: 'fulfillments.tracking_urls',
+      name: 'Tracking URLs',
+      description: `The URLs of tracking pages for the fulfillment.`,
     },
   ],
 };
