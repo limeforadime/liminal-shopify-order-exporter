@@ -3,7 +3,7 @@ import { authenticatedFetch, getSessionToken } from '@shopify/app-bridge-utils';
 function userLoggedInFetch(app) {
   return async (uri, options) => {
     // this line needed in order to "freshen" the current JWT before using it for request
-    await getSessionToken(app);
+    // await getSessionToken(app);
     const fetchFunction = authenticatedFetch(app);
     const response = await fetchFunction(uri, options);
 

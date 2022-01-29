@@ -101,7 +101,8 @@ const Index = () => {
       const res = await userLoggedInFetch(app)('/api/isSessionActive');
       console.log(`response status code: ${res.status}`);
       if (res.status != 200) {
-        redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
+        // redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
+        redirect.dispatch(Redirect.Action.REMOTE, `${app.localOrigin}/auth?shop=${shop}`);
       }
     };
     if (shop) {
@@ -198,13 +199,15 @@ const Index = () => {
       return;
     }
   });
+
   const handleAuthButton = useCallback(async () => {
     // redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
     redirect.dispatch(Redirect.Action.REMOTE, `${app.localOrigin}/auth?shop=${shop}`);
   });
   const handleRedirect = useCallback(async () => {
     setShowError(false);
-    redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
+    redirect.dispatch(Redirect.Action.REMOTE, `${app.localOrigin}/auth?shop=${shop}`);
+    // redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
   });
 
   return (

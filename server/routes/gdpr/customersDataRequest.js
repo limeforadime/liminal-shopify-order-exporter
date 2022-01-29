@@ -17,7 +17,7 @@ Payload
 import bodyParser from 'koa-bodyparser';
 import Router from '@koa/router';
 const customersDataRequest = new Router();
-import verifyWebhook from '../../utils/server/middleware/verifyWebhook';
+import verifyWebhook from '../../../utils/server/middleware/verifyWebhook';
 
 customersDataRequest.post('/gdpr/customers_data_request', bodyParser(), verifyWebhook(), async (ctx) => {
   console.log('Customer Data Request endpoint was hit, and verified.');

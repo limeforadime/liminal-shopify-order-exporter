@@ -49,7 +49,8 @@ const AppStateWrapper = ({ children }) => {
   });
   Router.events.on('routeChangeError', (err) => {
     console.error(err, 'Route Change Error');
-    redirect.dispatch(Redirect.Action.APP, `/`);
+    // redirect.dispatch(Redirect.Action.APP, `/`);
+    redirect.dispatch(Redirect.Action.REMOTE, `${app.localOrigin}/auth?shop=${shop}`);
     setIsPageLoading(false);
     showToast('Route error', true);
   });

@@ -8,8 +8,7 @@
 import combineRouters from 'koa-combine-routers';
 
 import { appUninstallRoute } from './appUninstalled';
-import { collectionsCreateRoute } from './collectionsCreate';
 
-const webhookRouters = combineRouters(appUninstallRoute, collectionsCreateRoute);
+const webhookRouters = combineRouters(appUninstallRoute);
 
 export default webhookRouters;

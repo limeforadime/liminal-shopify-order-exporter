@@ -9,15 +9,11 @@ import Router from '@koa/router';
 
 import dbConnect from '../utils/server/dbConnect';
 import sessionStorage from './sessionStorage';
-import SessionModel from '../models/SessionModel';
-import StoreDetailsModel from '../models/StoreDetailsModel';
-import webhookRouters from '../webhooks';
-import forcedFailMiddleware from '../utils/server/middleware/forcedFailMiddleware';
+import ShopModel from './models/ShopModel';
+import webhookRouters from './webhooks';
 
-import userRoutes from '../routes';
-import { appUninstallWebhook } from '../webhooks/appUninstalled';
-import { collectionsCreateWebhook } from '../webhooks/collectionsCreate';
-import createOrUpdateShopEntry from './createOrUpdateShopEntry';
+import userRoutes from './routes';
+import { appUninstallWebhook } from './webhooks/appUninstalled';
 
 try {
   (async () => await dbConnect())();
@@ -60,12 +56,11 @@ app.prepare().then(() => {
         const { host } = ctx.query;
         try {
           await appUninstallWebhook(shop, accessToken);
-          await collectionsCreateWebhook(shop, accessToken);
         } catch (e) {
           console.log('error subscribing to webhooks');
           console.log(e);
         }
-        await createOrUpdateShopEntry(shop);
+        await ShopModel.createOrUpdateShop(shop);
         ctx.redirect(`/?shop=${shop}&host=${host}`);
       },
     })
@@ -101,12 +96,15 @@ app.prepare().then(() => {
         console.log('shop query undefined; returning from function');
         throw new Error('Fatal: Shop query undefined, cannot go further');
       }
-      const findShopCount = await StoreDetailsModel.countDocuments({ shop }).clone();
+      const foundShop = await ShopModel.findOne({ shop }).clone();
 
-      if (findShopCount < 1) {
-        console.log('(*) route: didnt find shop, redirecting to /auth?shop=shop');
+      if (!foundShop) {
+        console.log('(*) route: didnt find shop, redirecting to /auth?shop={shop}');
         ctx.redirect(`/auth?shop=${shop}`);
       } else {
+        ctx.state.shopModel = foundShop;
+        console.log('shopModel:');
+        console.log(ctx.state.shopModel);
         console.log('(*) route: successful, handling request now');
         await handleRequest(ctx);
       }

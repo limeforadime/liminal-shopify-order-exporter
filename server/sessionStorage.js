@@ -3,7 +3,7 @@
  * https://github.com/Shopify/shopify-node-api/blob/main/docs/usage/customsessions.md
  */
 
-import SessionModel from '../models/SessionModel';
+import SessionModel from './models/SessionModel';
 import Shopify from '@shopify/shopify-api';
 import logger from 'npmlog';
 import Cryptr from 'cryptr';
@@ -12,12 +12,8 @@ const cryption = new Cryptr(process.env.ENCRYPTION_STRING);
 const storeCallback = async (session) => {
   logger.info('sessionStorage->storeCallback: ', 'Running storeCallback()');
   try {
-    const result = await SessionModel.findOne({ id: session.id });
-
+    const result = await SessionModel.findOne({ id: session.id }).exec();
     if (result === null) {
-      // https://github.com/Shopify/shopify-node-api/issues/224#issuecomment-888579421
-      // "store session token", lasts 24hrs
-      // "user session token", lasts 60 seconds so set it to expire 60 seconds from now
       const newSession = await SessionModel.create({
         id: session.id,
         // content: JSON.stringify(session),
@@ -33,7 +29,7 @@ const storeCallback = async (session) => {
           content: cryption.encrypt(JSON.stringify(session)),
           shop: session.shop,
         }
-      );
+      ).exec();
       logger.info('sessionStorage->storeCallback: ', 'Updated session model');
     }
   } catch (e) {
@@ -44,7 +40,7 @@ const storeCallback = async (session) => {
 
 const loadCallback = async (id) => {
   try {
-    const sessionResult = await SessionModel.findOne({ id });
+    const sessionResult = await SessionModel.findOne({ id }).exec();
     if (sessionResult) {
       logger.info('sessionStorage->loadCallback: ', 'Loaded session model');
       const session = JSON.parse(cryption.decrypt(sessionResult.content));
