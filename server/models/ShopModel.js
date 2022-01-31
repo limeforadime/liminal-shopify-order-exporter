@@ -3,7 +3,7 @@
  */
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
-import MappingModel, { mappingSchema } from './MappingModel';
+import ProfileModel, { profileSchema } from './ProfileModel';
 
 const shopSchema = new Schema(
   {
@@ -15,10 +15,10 @@ const shopSchema = new Schema(
       type: String,
       required: true,
     },
-    mappings: [
+    profiles: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'Mapping',
+        ref: 'Profile',
         required: true,
       },
     ],
@@ -26,10 +26,10 @@ const shopSchema = new Schema(
   { timestamps: true }
 );
 
-shopSchema.methods.addNewMapping = async function (mappingName) {
-  const newMapping = await MappingModel.create({
+shopSchema.methods.addNewProfile = async function (profileName) {
+  const newProfile = await ProfileModel.create({
     ownerShop: this.shop,
-    name: mappingName,
+    name: profileName,
     settings: {
       global: {},
       selectedTags: [],
@@ -47,9 +47,9 @@ shopSchema.methods.addNewMapping = async function (mappingName) {
       },
     },
   });
-  const updatedMappings = [...this.mappings];
-  updatedMappings.push(newMapping);
-  this.mappings = updatedMappings;
+  const updatedProfiles = [...this.profiles];
+  updatedProfiles.push(newProfile);
+  this.profiles = updatedProfiles;
   await this.save();
 };
 
@@ -61,7 +61,7 @@ shopSchema.statics.createOrUpdateShop = async function (shop) {
       await this.create({
         shop,
         status: 'ACTIVE',
-        mappings: [],
+        profiles: [],
       });
       console.log('Successfully added shop to database');
     } else {

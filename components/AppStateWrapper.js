@@ -24,17 +24,21 @@ const AppStateWrapper = ({ children }) => {
   const [isPageLoading, setIsPageLoading] = useState(false);
   const [isLoadingBar, setIsLoadingBar] = useState(false);
   const [isToast, setIsToast] = useState(false);
-  const [isToastError, setIsToastError] = useState(false);
+  const [isToastError, setIsToastError] = useState(true);
   const [toastMessage, setToastMessage] = useState('');
   useEffect(() => {
     async function getShop() {
       try {
         const res = await getSessionToken(app);
         const decoded = jwtDecode(res);
-        setShop(decoded.dest.replace(/https:\/\//, ''));
-        console.log(`Shop successfully set as: ${decoded.dest.replace(/https:\/\//, '')}`);
-      } catch (e) {
-        console.log(e);
+        if (decoded.dest && decoded.dest.length > 0) {
+          setShop(decoded.dest.replace(/https:\/\//, ''));
+          console.log(`Shop successfully set as: ${decoded.dest.replace(/https:\/\//, '')}`);
+        } else {
+          throw new Error("Couldn't set shop");
+        }
+      } catch (err) {
+        console.error(err);
       }
     }
     getShop();

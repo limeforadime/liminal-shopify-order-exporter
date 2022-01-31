@@ -11,14 +11,14 @@ import shopRedact from './gdpr/shopRedact';
 import isSessionActiveRoute from './isSessionActive';
 import ordersRoute from './orders/orders';
 import orderCountRoute from './orders/orderCount';
-import mappingsRoute from './mappings/mappings';
+import profilesRoute from './profiles/profiles';
 
 const userRoutes = combineRouters(
   customersDataRequest,
   customersRedact,
   shopRedact,
   ordersRoute,
-  mappingsRoute,
+  profilesRoute,
   orderCountRoute,
   isSessionActiveRoute
   // triggerOauth

@@ -1,10 +1,10 @@
 /*
-  Mapping model which contains saved settings (tags, checkboxes, etc.)
+  Export Profile model which contains saved settings (tags, checkboxes, etc.)
 */
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
-const mappingSchema = new Schema({
+const profileSchema = new Schema({
   ownerShop: {
     type: String,
     required: true,
@@ -64,7 +64,7 @@ const mappingSchema = new Schema({
   },
 });
 
-const MappingModel = mongoose.model('Mapping', mappingSchema);
+const ProfileModel = mongoose.model('Profile', profileSchema);
 
-export { mappingSchema };
-export default MappingModel;
+export { profileSchema };
+export default ProfileModel;
