@@ -33,7 +33,6 @@ const AppStateWrapper = ({ children }) => {
         const decoded = jwtDecode(res);
         if (decoded.dest && decoded.dest.length > 0) {
           setShop(decoded.dest.replace(/https:\/\//, ''));
-          console.log(`Shop successfully set as: ${decoded.dest.replace(/https:\/\//, '')}`);
         } else {
           throw new Error("Couldn't set shop");
         }
@@ -49,7 +48,6 @@ const AppStateWrapper = ({ children }) => {
   });
   Router.events.on('routeChangeComplete', (url) => {
     setIsPageLoading(false);
-    console.log('@route change complete!@');
   });
   Router.events.on('routeChangeError', (err) => {
     console.error(err, 'Route Change Error');

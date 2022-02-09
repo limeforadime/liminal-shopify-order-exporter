@@ -1,5 +1,18 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { Button, Card, Frame, Toast, Collapsible, Page, Layout, Stack, List } from '@shopify/polaris';
+import {
+  Button,
+  Card,
+  Frame,
+  Toast,
+  Collapsible,
+  Page,
+  Layout,
+  Stack,
+  List,
+  PageActions,
+  TextField,
+  TextStyle,
+} from '@shopify/polaris';
 import { useAppBridge } from '@shopify/app-bridge-react';
 import { Redirect } from '@shopify/app-bridge/actions';
 import userLoggedInFetch from '../utils/client/userLoggedInFetch';
@@ -13,10 +26,23 @@ import FieldsCard from '../components/Fields/FieldsCard';
 import FieldsStateWrapper from '../components/Fields/FieldsStateWrapper';
 
 const ProfileDetails = () => {
+  const appState = useContext(AppStateContext);
+  const router = useRouter();
+  const { shop } = appState;
+  const app = useAppBridge();
+  const redirect = Redirect.create(app);
+  // TODO: error handling if router.query.isNewProfile is empty
+  let { isNewProfile, id } = router.query;
+  isNewProfile = JSON.parse(isNewProfile); // convert string to boolean
+  // TODO handle checking id
+
+  const [profileName, setProfileName] = useState('');
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showDebugButtons, setShowDebugButtons] = useState(true);
   const [selectedTags, setSelectedTags] = useState([]); // for Filtering
+  const [isLoading, setIsLoading] = useState(true);
+  const [fileName, setFileName] = useState('');
 
   /* Checked Fields State */
   const [checkedMainState, setCheckedMainState] = useState(
@@ -72,76 +98,43 @@ const ProfileDetails = () => {
     setCheckedFulfillmentState,
   };
 
-  const appState = useContext(AppStateContext);
-  const { shop } = appState;
-  const app = useAppBridge();
-  const redirect = Redirect.create(app);
-
-  // load default state from localstorage
-  // useEffect(() => {
-  //   if (typeof Storage !== 'undefined') {
-  //     let localStorageDefaultState = JSON.parse(localStorage.getItem('checkedFieldsState'));
-  //     if (localStorageDefaultState != null) {
-  //       setCheckedMainState(localStorageDefaultState.checkedMainState);
-  //       setCheckedCustomerState(localStorageDefaultState.checkedCustomerState);
-  //       setCheckedLineItemsState(localStorageDefaultState.checkedLineItemsState);
-  //       setCheckedTransactionsState(localStorageDefaultState.checkedTransactionsState);
-  //       setCheckedBillingAddressState(localStorageDefaultState.checkedBillingAddressState);
-  //       setCheckedDiscountCodesState(localStorageDefaultState.checkedDiscountCodesState);
-  //       setCheckedShippingAddressState(localStorageDefaultState.checkedShippingAddressState);
-  //       setCheckedShippingLinesState(localStorageDefaultState.checkedShippingLinesState);
-  //       setCheckedTaxLinesState(localStorageDefaultState.checkedTaxLinesState);
-  //       setCheckedFulfillmentState(localStorageDefaultState.checkedFulfillmentState);
-  //     }
-  //   }
-  // }, []);
-
+  // if in edit mode (isNewProfile == false), get data from database for given ID
   useEffect(() => {
-    const checkIfSessionActive = async () => {
-      console.log('checking if session active...');
-      const res = await userLoggedInFetch(app)('/api/isSessionActive');
-      console.log(`response status code: ${res.status}`);
-      if (res.status != 200) {
-        redirect.dispatch(Redirect.Action.REMOTE, `${app.localOrigin}/auth?shop=${shop}`);
+    const getData = async () => {
+      try {
+        if (!isNewProfile) {
+          // fetch profile from the route using provided id
+          const res = await userLoggedInFetch(app)(
+            `${app.localOrigin}/api/profiles/${id}?` + new URLSearchParams({ shop })
+          );
+          if (res.status != 200) throw new Error('Unable to retrieve profile');
+
+          const profile = await res.json();
+          const { name } = profile;
+          const { fields, selectedTags } = profile.settings;
+          setProfileName(name);
+          setSelectedTags([...selectedTags]);
+          setCheckedMainState(fields.checkedMainState);
+          setCheckedCustomerState(fields.checkedCustomerState);
+          setCheckedLineItemsState(fields.checkedLineItemsState);
+          setCheckedTransactionsState(fields.checkedTransactionsState);
+          setCheckedBillingAddressState(fields.checkedBillingAddressState);
+          setCheckedDiscountCodesState(fields.checkedDiscountCodesState);
+          setCheckedShippingAddressState(fields.checkedShippingAddressState);
+          setCheckedShippingLinesState(fields.checkedShippingLinesState);
+          setCheckedTaxLinesState(fields.checkedTaxLinesState);
+          setCheckedFulfillmentState(fields.checkedFulfillmentState);
+        }
+        setIsLoading(false);
+      } catch (err) {
+        console.log(err);
       }
     };
-    if (shop) {
-      checkIfSessionActive();
-    }
-  }, [shop]);
+    getData();
+  }, []);
 
-  // Set localstorage on every update to checkedState
-  useEffect(() => {
-    if (typeof Storage !== 'undefined') {
-      localStorage.setItem(
-        'checkedFieldsState',
-        JSON.stringify({
-          checkedMainState,
-          checkedCustomerState,
-          checkedLineItemsState,
-          checkedTransactionsState,
-          checkedBillingAddressState,
-          checkedDiscountCodesState,
-          checkedShippingAddressState,
-          checkedShippingLinesState,
-          checkedTaxLinesState,
-          checkedFulfillmentState,
-        })
-      );
-    }
-  }, [
-    checkedMainState,
-    checkedCustomerState,
-    checkedLineItemsState,
-    checkedTransactionsState,
-    checkedBillingAddressState,
-    checkedDiscountCodesState,
-    checkedShippingAddressState,
-    checkedShippingLinesState,
-    checkedTaxLinesState,
-    checkedFulfillmentState,
-  ]);
-
+  const handleProfileNameChange = useCallback((newValue) => setProfileName(newValue));
+  const handleFileNameChange = useCallback((newValue) => setFileName(newValue));
   const handleDebugToggle = useCallback(() => setShowDebugButtons((prevState) => !prevState), []);
   const handleSessionButton = useCallback(() => {
     console.log(`In Index, getting appStateWrapper's shop: ${shop}`);
@@ -164,7 +157,12 @@ const ProfileDetails = () => {
   });
   const handleOrderButton = useCallback(async () => {
     try {
-      const res = await userLoggedInFetch(app)('/api/orders?created_at_max=2021-07-27T03:25:40-04:00');
+      const res = await userLoggedInFetch(app)(
+        '/api/orders?' +
+          new URLSearchParams({
+            created_at_max: '2021-07-27T03:25:40-04:00',
+          })
+      );
       if (res.status == 200) {
         const responseData = await res.json();
         console.log(responseData);
@@ -179,7 +177,6 @@ const ProfileDetails = () => {
     }
   });
   const handleOrderCountButton = useCallback(async () => {
-    console.log(new URLSearchParams({ foo: '1', bar: 10 }).toString());
     try {
       const res = await userLoggedInFetch(app)('/api/orderCount');
       if (res.status == 200) {
@@ -206,82 +203,190 @@ const ProfileDetails = () => {
     // redirect.dispatch(Redirect.Action.APP, `/auth?shop=${shop}`);
   });
 
-  return (
-    <Page title="Main Page" subtitle="Here's where the magic happens">
-      <Layout>
-        <Layout.Section>
-          {showError ? (
-            <Frame>
-              <Toast content={errorMessage} error={true} duration={6000} onDismiss={handleRedirect} />
-            </Frame>
-          ) : null}
-          <FilterCard {...{ selectedTags, setSelectedTags }} />
-          <FieldsStateWrapper value={fieldsState}>
-            <FieldsCard />
-          </FieldsStateWrapper>
-          <Card sectioned>
-            <Stack vertical>
-              <Button
-                onClick={handleDebugToggle}
-                plain
-                destructive
-                ariaExpanded={showDebugButtons}
-                ariaControls="basic-collapsible"
-              >
-                Debug Buttons
-              </Button>
-              <Collapsible open={showDebugButtons} id="basic-collapsible" expandOnPrint>
-                <Button
-                  onClick={() => {
-                    redirect.dispatch(Redirect.Action.APP, `/routeTest?shop=${shop}&test=hey`);
-                  }}
-                >
-                  Go To Test Page
-                </Button>
-                <Button onClick={handleOrderButton}>Hit Orders Route</Button>
-                <Button onClick={handleOrderCountButton}>Order count</Button>
-                <Button onClick={handleAuthButton}>Auth</Button>
-                <Button onClick={handleSessionButton}>GetSession</Button>
-                <Button onClick={handleJWTButton}>Get JWT</Button>
-                <Button size="large" onClick={handleIsSessionActiveButton}>
-                  IsSessionActive?
-                </Button>
-                <Button
-                  size="large"
-                  onClick={() => {
-                    Router.events.emit('routeChangeError', () => console.log('emitting route change error'));
-                  }}
-                >
-                  TestError
-                </Button>
+  const handleCreateOrEditProfile = useCallback(async ({ isNew }) => {
+    console.log('handling create or edit profile...');
+    let route, method;
+    if (isNew) {
+      route = `${app.localOrigin}/api/profiles/create`;
+      method = 'POST';
+    } else {
+      route = `${app.localOrigin}/api/profiles/edit`;
+      method = 'PATCH';
+    }
+    try {
+      let body = {
+        profileName,
+        selectedTags,
+        fields: {
+          checkedMainState,
+          checkedCustomerState,
+          checkedLineItemsState,
+          checkedTransactionsState,
+          checkedBillingAddressState,
+          checkedDiscountCodesState,
+          checkedShippingAddressState,
+          checkedShippingLinesState,
+          checkedTaxLinesState,
+          checkedFulfillmentState,
+        },
+      };
+      if (!isNew) body = { ...body, id };
 
-                {/* </Card> */}
-              </Collapsible>
-            </Stack>
-          </Card>
-        </Layout.Section>
-        <Layout.Section secondary>
-          <Card title="Settings">
-            <Card.Header title="hey wuddup" />
-            <Card.Section title="yo wuddup">
-              <p>Here's some text hey wuddup</p>
-            </Card.Section>
-            <Card.Section title="Address Information" actions={[{ content: 'Edit' }]}>
-              1234 Main Street, Main, CA 90111
-            </Card.Section>
-            <Card.Section title="Customer Information" actions={[{ content: 'Edit' }]}>
-              <List>
-                <List.Item>Jon Smith</List.Item>
-                <List.Item>123 Some Text</List.Item>
-              </List>
-            </Card.Section>
-            <Card.Section title="Misc Information" actions={[{ content: 'Edit' }]}>
-              1234 Main Street, Main, CA 90111
-            </Card.Section>
-          </Card>
-        </Layout.Section>
-      </Layout>
-    </Page>
+      const res = await userLoggedInFetch(app)(route, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error('Problem creating or editing profile');
+
+      const data = await res.json();
+      console.log(data);
+      router.push('/');
+    } catch (err) {
+      console.error(err);
+    }
+  });
+
+  const handleDeleteProfile = useCallback(async () => {
+    try {
+      const res = await userLoggedInFetch(app)(`${app.localOrigin}/api/profiles/delete`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id }),
+      });
+      if (!res.ok) throw new Error('Problem deleting profile');
+      const data = await res.json();
+      console.log(data);
+      router.push('/');
+    } catch (err) {
+      console.error(err);
+    }
+  });
+  return (
+    <>
+      {isLoading ? (
+        <Page title="Loading Data..." />
+      ) : (
+        <Page
+          title="Main Page"
+          subtitle="Here's where the magic happens"
+          breadcrumbs={[{ content: 'Home', onAction: () => router.push('/') }]}
+          primaryAction={
+            isNewProfile
+              ? {
+                  content: 'Create export profile',
+                  onAction: () => handleCreateOrEditProfile({ isNew: true }),
+                }
+              : {
+                  content: 'Update export profile',
+                  onAction: () => handleCreateOrEditProfile({ isNew: false }),
+                }
+          }
+        >
+          <Layout>
+            <Layout.Section>
+              {showError ? (
+                <Frame>
+                  <Toast content={errorMessage} error={true} duration={6000} onDismiss={handleRedirect} />
+                </Frame>
+              ) : null}
+              <FilterCard {...{ selectedTags, setSelectedTags }} />
+              <FieldsStateWrapper value={fieldsState}>
+                <FieldsCard />
+              </FieldsStateWrapper>
+              <Card sectioned>
+                <Stack vertical>
+                  <Button
+                    onClick={handleDebugToggle}
+                    plain
+                    destructive
+                    ariaExpanded={showDebugButtons}
+                    ariaControls="basic-collapsible"
+                  >
+                    Debug Buttons
+                  </Button>
+                  <Collapsible open={showDebugButtons} id="basic-collapsible" expandOnPrint>
+                    <Button
+                      onClick={() => {
+                        redirect.dispatch(Redirect.Action.APP, `/routeTest?shop=${shop}&test=hey`);
+                      }}
+                    >
+                      Go To Test Page
+                    </Button>
+                    <Button onClick={handleOrderButton}>Hit Orders Route</Button>
+                    <Button onClick={handleOrderCountButton}>Order count</Button>
+                    <Button onClick={handleAuthButton}>Auth</Button>
+                    <Button onClick={handleSessionButton}>GetSession</Button>
+                    <Button onClick={handleJWTButton}>Get JWT</Button>
+                    <Button size="large" onClick={handleIsSessionActiveButton}>
+                      IsSessionActive?
+                    </Button>
+                    <Button
+                      size="large"
+                      onClick={() => {
+                        Router.events.emit('routeChangeError', () =>
+                          console.log('emitting route change error')
+                        );
+                      }}
+                    >
+                      TestError
+                    </Button>
+
+                    {/* </Card> */}
+                  </Collapsible>
+                </Stack>
+              </Card>
+            </Layout.Section>
+            <Layout.Section secondary>
+              <Card title="Settings">
+                <Card.Section>
+                  <TextField
+                    value={profileName}
+                    label={<TextStyle variation="strong">Export profile name</TextStyle>}
+                    onChange={handleProfileNameChange}
+                  />
+                </Card.Section>
+                <Card.Section>
+                  <TextField
+                    value={fileName}
+                    label={<TextStyle variation="strong">CSV file name</TextStyle>}
+                    onChange={handleFileNameChange}
+                  />
+                </Card.Section>
+              </Card>
+            </Layout.Section>
+          </Layout>
+          <PageActions
+            primaryAction={
+              isNewProfile
+                ? {
+                    content: 'Create export profile',
+                    onAction: () => handleCreateOrEditProfile({ isNew: true }),
+                  }
+                : {
+                    content: 'Update export profile',
+                    onAction: () => handleCreateOrEditProfile({ isNew: false }),
+                  }
+            }
+            secondaryActions={
+              isNewProfile
+                ? undefined
+                : [
+                    {
+                      content: 'Delete export profile',
+                      onAction: handleDeleteProfile,
+                      destructive: true,
+                    },
+                  ]
+            }
+          />
+        </Page>
+      )}
+    </>
   );
 };
 

@@ -56,9 +56,9 @@ app.prepare().then(() => {
         const { host } = ctx.query;
         try {
           await appUninstallWebhook(shop, accessToken);
-        } catch (e) {
+        } catch (err) {
           console.log('error subscribing to webhooks');
-          console.log(e);
+          console.log(err);
         }
         await ShopModel.createOrUpdateShop(shop);
         ctx.redirect(`/?shop=${shop}&host=${host}`);
@@ -99,12 +99,9 @@ app.prepare().then(() => {
       const foundShop = await ShopModel.findOne({ shop }).clone();
 
       if (!foundShop) {
-        console.log('(*) route: didnt find shop, redirecting to /auth?shop={shop}');
+        console.log(`(*) route: didnt find shop, redirecting to /auth with shop of ${shop}`);
         ctx.redirect(`/auth?shop=${shop}`);
       } else {
-        ctx.state.shopModel = foundShop;
-        console.log('shopModel:');
-        console.log(ctx.state.shopModel);
         console.log('(*) route: successful, handling request now');
         await handleRequest(ctx);
       }

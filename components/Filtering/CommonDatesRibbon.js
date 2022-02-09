@@ -12,7 +12,6 @@ const CommonDatesRibbon = ({ addTag }) => {
       tagString = `Date: Between ${formattedStartDate} - ${formattedEndDate}`;
     }
     addTag(tagString, true);
-    console.log(`DateRibbon: ${tagString}`);
   };
 
   return (

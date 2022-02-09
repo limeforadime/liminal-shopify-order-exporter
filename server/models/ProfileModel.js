@@ -16,48 +16,48 @@ const profileSchema = new Schema({
   settings: {
     global: {}, // will get to last
     selectedTags: {
-      type: Array,
+      type: [String],
       required: true,
     },
     fields: {
       checkedMainState: {
-        type: Array,
+        type: [Boolean],
         required: true,
       },
       checkedCustomerState: {
-        type: Array,
+        type: [Boolean],
         required: true,
       },
       checkedLineItemsState: {
-        type: Array,
+        type: [Boolean],
         required: true,
       },
       checkedTransactionsState: {
-        type: Array,
+        type: [Boolean],
         required: true,
       },
       checkedBillingAddressState: {
-        type: Array,
+        type: [Boolean],
         required: true,
       },
       checkedDiscountCodesState: {
-        type: Array,
+        type: [Boolean],
         required: true,
       },
       checkedShippingAddressState: {
-        type: Array,
+        type: [Boolean],
         required: true,
       },
       checkedShippingLinesState: {
-        type: Array,
+        type: [Boolean],
         required: true,
       },
       checkedTaxLinesState: {
-        type: Array,
+        type: [Boolean],
         required: true,
       },
       checkedFulfillmentState: {
-        type: Array,
+        type: [Boolean],
         required: true,
       },
     },

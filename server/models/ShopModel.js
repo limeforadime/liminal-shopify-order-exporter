@@ -26,25 +26,14 @@ const shopSchema = new Schema(
   { timestamps: true }
 );
 
-shopSchema.methods.addNewProfile = async function (profileName) {
+shopSchema.methods.addNewProfile = async function (profileName, fields, selectedTags) {
   const newProfile = await ProfileModel.create({
     ownerShop: this.shop,
     name: profileName,
     settings: {
       global: {},
-      selectedTags: [],
-      fields: {
-        checkedMainState: [],
-        checkedCustomerState: [],
-        checkedLineItemsState: [],
-        checkedTransactionsState: [],
-        checkedBillingAddressState: [],
-        checkedDiscountCodesState: [],
-        checkedShippingAddressState: [],
-        checkedShippingLinesState: [],
-        checkedTaxLinesState: [],
-        checkedFulfillmentState: [],
-      },
+      selectedTags,
+      fields,
     },
   });
   const updatedProfiles = [...this.profiles];
