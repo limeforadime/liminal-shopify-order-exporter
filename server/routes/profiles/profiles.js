@@ -52,6 +52,8 @@ profilesRoute.post(
       if (!shop) ctx.throw(400, 'Couldnt get shop from header');
       if (!profileName || !fields || !selectedTags) ctx.throw(400, 'Bad input');
 
+      console.log('fields:');
+      console.log(fields);
       const foundShop = await ShopModel.findOne({ shop }).exec();
       if (!foundShop) throw new Error('Couldnt retrieve shop from database');
       await foundShop.addNewProfile(profileName, fields, selectedTags);

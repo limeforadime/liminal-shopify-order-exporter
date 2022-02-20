@@ -98,114 +98,114 @@ export const fieldsSourceData = {
   ],
   customer: [
     {
-      value: 'customer.email',
+      value: 'customer__email',
       name: 'Email',
       description: `The customer's email address.`,
     },
     {
-      value: 'customer.first_name',
+      value: 'customer__first_name',
       name: 'Customer First Name',
       description: `The customer's first name.`,
     },
     {
-      value: 'customer.last_name',
+      value: 'customer__last_name',
       name: 'Customer Last Name',
       description: `The customer's last name.`,
     },
     {
-      value: 'customer.phone',
+      value: 'customer__phone',
       name: 'Phone',
       description: `The unique phone number (E.164 format) for this customer.`,
     },
     {
-      value: 'customer.note',
+      value: 'customer__note',
       name: 'Customer Note',
       description: `Extra information about the customer.`,
     },
   ],
   lineItems: [
     {
-      value: 'line_items.title',
+      value: 'line_items__title',
       name: 'Line Item Name',
       description: `The title of the product.`,
     },
     {
-      value: 'line_items.price',
+      value: 'line_items__price',
       name: 'Line Item Price',
       description: `The price of the item before discounts have been applied.`,
     },
     {
-      value: 'line_items.quantity',
+      value: 'line_items__quantity',
       name: 'Line Item Quantity',
       description: `The number of products that were purchased.`,
     },
     {
-      value: 'line_items.fulfillment_status',
+      value: 'line_items__fulfillment_status',
       name: 'Line Item Fulfillment Status',
       description: `How far along an order is in terms line items fulfilled. Valid values are: shipped, unfulfilled or partial.`,
     },
     {
-      value: 'line_items.fulfillable_quantity',
+      value: 'line_items__fulfillable_quantity',
       name: 'Line Item Fulfillable Quantity',
       description: `The amount available to fulfill. This is the quantity - max(refunded_quantity, fulfilled_quantity) - pending_fulfilled_quantity - open_fulfilled_quantity.)`,
     },
     {
-      value: 'line_items.fulfillment_service',
+      value: 'line_items__fulfillment_service',
       name: 'Line Item Fulfillment Service',
       description: `Service provider who is doing the fulfillment. Valid values are either 'manual' or the name of the provider. eg: 'amazon', 'shipwire', etc.`,
     },
     {
-      value: 'line_items.sku',
+      value: 'line_items__sku',
       name: 'Line Item Sku',
       description: `A unique identifier of the item in the fulfillment.`,
     },
     {
-      value: 'line_items.grams',
+      value: 'line_items__grams',
       name: 'Line Item Grams',
       description: `The weight of the item in grams.`,
     },
     {
-      value: 'line_items.product_id',
+      value: 'line_items__product_id',
       name: 'Line Item Product ID',
       description: `The ID of the product that the line item belongs to.`,
     },
     {
-      value: 'line_items.requires_shipping',
+      value: 'line_items__requires_shipping',
       name: 'Line Item Requires Shipping',
       description: `Whether the item requires shipping.`,
     },
     {
-      value: 'line_items.variant_id',
+      value: 'line_items__variant_id',
       name: 'Line Item Variant ID',
       description: `The id of the product variant.`,
     },
     {
-      value: 'line_items.variant_title',
+      value: 'line_items__variant_title',
       name: 'Line Item Variant Title',
       description: `The title of the product variant.`,
     },
     {
-      value: 'line_items.vendor',
+      value: 'line_items__vendor',
       name: 'Vendor',
       description: `The name of the supplier of the item.`,
     },
     {
-      value: 'line_items.gift_card',
+      value: 'line_items__gift_card',
       name: 'Line Item Gift Card',
       description: `States whether or not the line_item is a gift card. If so, the item is not taxed or considered for shipping charges.`,
     },
     {
-      value: 'line_items.taxable',
+      value: 'line_items__taxable',
       name: 'Line Item Taxable',
       description: `States whether or not the product was taxable. Values are: true or false.`,
     },
     {
-      value: 'line_items.total_discount',
+      value: 'line_items__total_discount',
       name: 'Line Item Discount',
       description: `The total discount amount applied to this line item. This value is not subtracted in the line item price.`,
     },
     {
-      value: 'line_items.properties',
+      value: 'line_items__properties',
       name: 'Line Item Properties',
       description: `An array of custom information for an item that has been added to the cart. Often used to provide product customization options.`,
     },
@@ -214,99 +214,99 @@ export const fieldsSourceData = {
   // /admin/api/2022-01/orders/{order_id}/transactions.json
   transactions: [
     {
-      value: 'transactions.amount',
+      value: 'transactions__amount',
       name: 'Total',
       description: `The amount of money that the transaction was for.`,
     },
     {
-      value: 'transactions.gateway',
+      value: 'transactions__gateway',
       name: 'Payment Method',
       description: `The name of the gateway the transaction was issued through. A list of gateways can be found on Shopifys Payment Gateway page.`,
     },
     {
-      value: 'transactions.status',
+      value: 'transactions__status',
       name: 'Transaction Status',
       description: `The status of the transaction. Valid values are:<br> <ul><li>pending</li><li>failure</li><li>success</li><li>error</li></ul>`,
     },
     {
-      value: 'transactions.kind',
+      value: 'transactions__kind',
       name: 'Transaction Kind',
       description: `The kind of transaction:<br><ul><li><b>authorization</b>: Money that the customer has agreed to pay. Authorization period lasts for up to 7 to 30 days (depending on your payment service) while a store awaits for a customer's capture.'</li><li><b>capture</b>: Transfer of money that was reserved during the authorization of a shop.</li><li><b>sale</b>: The combination of authorization and capture, performed in one single step.</li><li><b>void</b>: The cancellation of a pending authorization or capture.</li><li><b>refund</b>: The partial or full return of the captured money to the customer.</li></ul>`,
     },
     {
-      value: 'transactions.currency',
+      value: 'transactions__currency',
       name: 'Transaction Currency',
       description: `The three letter code (ISO 4217) for the currency used for the payment.`,
     },
     {
-      value: 'transactions.processed_at',
+      value: 'transactions__processed_at',
       name: 'Paid At',
       description: `The date and time (ISO 8601 format) when a transaction was processed. This value is the date that's used in the analytic reports. By default, it matches the created_at value.`,
     },
   ],
   billingAddress: [
     {
-      value: 'billing_address.first_name',
+      value: 'billing_address__first_name',
       name: 'Billing First Name',
       description: `The first name of the person associated with the payment method.`,
     },
     {
-      value: 'billing_address.last_name',
+      value: 'billing_address__last_name',
       name: 'Billing Last Name',
       description: `The last name of the person associated with the payment method.`,
     },
     {
-      value: 'billing_address.address1',
+      value: 'billing_address__address1',
       name: 'Billing Address1',
       description: `The street address of the billing address.`,
     },
     {
-      value: 'billing_address.city',
+      value: 'billing_address__city',
       name: 'Billing City',
       description: `The city of the billing address.`,
     },
     {
-      value: 'billing_address.zip',
+      value: 'billing_address__zip',
       name: 'Billing Zip',
       description: `The zip or postal code of the billing address.`,
     },
     {
-      value: 'billing_address.country',
+      value: 'billing_address__country',
       name: 'Billing Country',
       description: `The name of the country of the billing address.`,
     },
     {
-      value: 'billing_address.province',
+      value: 'billing_address__province',
       name: 'Billing Province',
       description: `The name of the state or province of the billing address.`,
     },
     {
-      value: 'billing_address.name',
+      value: 'billing_address__name',
       name: 'Billing Name',
       description: `The full name of the person associated with the payment method.`,
     },
     {
-      value: 'billing_address.address2',
+      value: 'billing_address__address2',
       name: 'Billing Address2',
       description: `An optional additional field for the street address of the billing address.`,
     },
     {
-      value: 'billing_address.company',
+      value: 'billing_address__company',
       name: 'Billing Company',
       description: `The company of the person associated with the billing address.`,
     },
     {
-      value: 'billing_address.phone',
+      value: 'billing_address__phone',
       name: 'Billing Phone',
       description: `The phone number at the billing address.`,
     },
     {
-      value: 'billing_address.province_code',
+      value: 'billing_address__province_code',
       name: 'Billing Province Code',
       description: `The two-letter abbreviation of the state or province of the billing address.`,
     },
     {
-      value: 'billing_address.country_code',
+      value: 'billing_address__country_code',
       name: 'Billing Country Code',
       description: `The two-letter code (ISO 3166-1 alpha-2 two-letter country code) for the country of the billing address.)`,
     },
@@ -320,94 +320,94 @@ export const fieldsSourceData = {
   // TODO: discount_codes actually returns an array now
   discountCodes: [
     {
-      value: 'discount_codes.amount',
+      value: 'discount_codes__amount',
       name: 'Discount Amount',
       description: `The amount of the discount. The type field determines the unit of this amount.`,
     },
     {
-      value: 'discount_codes.code',
+      value: 'discount_codes__code',
       name: 'Discount Code',
       description: `The discount code.`,
     },
     {
-      value: 'discount_codes.type',
+      value: 'discount_codes__type',
       name: 'Discount Type',
       description: `The type of discount. Valid values are:<br><ul><li><b>fixed_amount</b>: The default value. "Applies a discount of amount as a unit of the store's currency. For example, if amount is 30 and the store's currency is USD, then 30 USD is deducted from the order total when the discount is applied.</li><li><b>percentage</b>: Applies a percentage discount of amount. For example, if amount is 30, then 30% of the order total will be deducted when the discount is applied.</li><li><b>shipping</b>: Applies a free shipping discount on orders that have a shipping rate less than or equal to amount. For example, if amount is 30, the discount will give the customer free shipping for any shipping rate that is less than or equal to $30.</li></ul>`,
     },
   ],
   shippingAddress: [
     {
-      value: 'shipping_address.first_name',
+      value: 'shipping_address__first_name',
       name: 'Shipping First Name',
       description: `The first name of the person associated with the payment method.`,
     },
     {
-      value: 'shipping_address.last_name',
+      value: 'shipping_address__last_name',
       name: 'Shipping Last Name',
       description: `The last name of the person associated with the payment method.`,
     },
     {
-      value: 'shipping_address.address1',
+      value: 'shipping_address__address1',
       name: 'Shipping Address1',
       description: `The street address of the shipping address.`,
     },
     {
-      value: 'shipping_address.city',
+      value: 'shipping_address__city',
       name: 'Shipping City',
       description: `The city of the shipping address.`,
     },
     {
-      value: 'shipping_address.zip',
+      value: 'shipping_address__zip',
       name: 'Shipping Zip',
       description: `The zip or postal code of the shipping address.`,
     },
     {
-      value: 'shipping_address.country',
+      value: 'shipping_address__country',
       name: 'Shipping Country',
       description: `The name of the country of the shipping address.`,
     },
     {
-      value: 'shipping_address.province',
+      value: 'shipping_address__province',
       name: 'Shipping Province',
       description: `The name of the state or province of the shipping address.`,
     },
     {
-      value: 'shipping_address.name',
+      value: 'shipping_address__name',
       name: 'Shipping Name',
       description: `The full name of the person associated with the payment method.`,
     },
     {
-      value: 'shipping_address.address2',
+      value: 'shipping_address__address2',
       name: 'Shipping Address2',
       description: `An optional additional field for the street address of the shipping address.`,
     },
     {
-      value: 'shipping_address.company',
+      value: 'shipping_address__company',
       name: 'Shipping Company',
       description: `The company of the person associated with the shipping address.`,
     },
     {
-      value: 'shipping_address.latitude',
+      value: 'shipping_address__latitude',
       name: 'Shipping Latitude',
       description: `The latitude of the shipping address.`,
     },
     {
-      value: 'shipping_address.longitude',
+      value: 'shipping_address__longitude',
       name: 'Shipping Longitude',
       description: `The longitude of the shipping address.`,
     },
     {
-      value: 'shipping_address.phone',
+      value: 'shipping_address__phone',
       name: 'Shipping Phone',
       description: `The phone number at the shipping address.`,
     },
     {
-      value: 'shipping_address.country_code',
+      value: 'shipping_address__country_code',
       name: 'Shipping Country Code',
       description: `The two-letter code for the country of the shipping address.`,
     },
     {
-      value: 'shipping_address.province_code',
+      value: 'shipping_address__province_code',
       name: 'Shipping Province Code',
       description: `The two-letter abbreviation of the state or province of the shipping address.`,
     },
@@ -416,59 +416,59 @@ export const fieldsSourceData = {
   // returns array
   shippingLines: [
     {
-      value: 'shipping_lines.code',
+      value: 'shipping_lines__code',
       name: 'Shipping Method Code',
       description: `A reference to the shipping method.`,
     },
     {
-      value: 'shipping_lines.discounted_price',
+      value: 'shipping_lines__discounted_price',
       name: 'Shipping Discounted Price',
       description: `The price of the shipping method after line-level discounts have been applied. Doesn't reflect cart-level or order-level discounts.`,
     },
     {
-      value: 'shipping_lines.price',
+      value: 'shipping_lines__price',
       name: 'Shipping Price',
       description: `The price of this shipping method.`,
     },
     {
-      value: 'shipping_lines.source',
+      value: 'shipping_lines__source',
       name: 'Shipping Method Source',
       description: `The source of the shipping method.`,
     },
     {
-      value: 'shipping_lines.title',
+      value: 'shipping_lines__title',
       name: 'Shipping Method',
       description: `The title of the shipping method.`,
     },
     {
-      value: 'shipping_lines.carrier_identifier',
+      value: 'shipping_lines__carrier_identifier',
       name: 'Shipping Carrier Identifier',
       description: `A reference to the carrier service that provided the rate. Present when the rate was computed by a third-party carrier service.`,
     },
     {
-      value: 'shipping_lines.requested_fulfillment_service_id',
+      value: 'shipping_lines__requested_fulfillment_service_id',
       name: 'Shipping Requested Fulfillment Service Id',
       description: `A reference to the fulfillment service that is being requested for the shipping method. Present if the shipping method requires processing by a third party fulfillment service; null otherwise.`,
     },
   ],
   taxLines: [
     {
-      value: 'tax_lines.price',
+      value: 'tax_lines__price',
       name: 'Tax Line Value',
       description: `The amount of tax to be charged.`,
     },
     {
-      value: 'tax_lines.rate',
+      value: 'tax_lines__rate',
       name: 'Tax Line Rate',
       description: `The rate of tax to be applied`,
     },
     {
-      value: 'tax_lines.title',
+      value: 'tax_lines__title',
       name: 'Tax Line Name',
       description: `The name of the tax`,
     },
     {
-      value: 'tax_lines.channel_liable',
+      value: 'tax_lines__channel_liable',
       name: 'Tax Line Channel Liable',
       description:
         'Whether the channel that submitted the tax line is liable for remitting. A value of null indicates unknown liability for the tax line.',
@@ -476,26 +476,38 @@ export const fieldsSourceData = {
   ],
   // https://shopify.dev/api/admin-rest/2022-01/resources/fulfillment#resource_object
   // TODO: The shape of the data here's a little weird. Verify each field
-  fulfillment: [
+  fulfillments: [
     {
-      value: 'fulfillment_orders.assigned_location_id',
-      name: 'Location Id',
-      description: `The ID of the location that has been assigned to do the work.`,
-    },
-    {
-      value: 'fulfillments.tracking_company',
+      value: 'fulfillments__tracking_company',
       name: 'Tracking Company',
       description: `The name of the tracking company.`,
     },
     {
-      value: 'fulfillments.tracking_numbers',
+      value: 'fulfillments__tracking_numbers',
       name: 'Tracking Number',
-      description: `Tracking numbers, provided by the shipping company.<br><br>It is highly recommended that you send the tracking company and/or the tracking URL as well. If neither one of these is sent, then the tracking company will be determined automatically. This can result in an invalid tracking URL.<br>When accounts are enabled, it is also displayed in the customer's order history.`,
+      description: `Tracking numbers, provided by the shipping company.`,
     },
     {
-      value: 'fulfillments.tracking_urls',
+      value: 'fulfillments__tracking_urls',
       name: 'Tracking URLs',
       description: `The URLs of tracking pages for the fulfillment.`,
+    },
+  ],
+  fulfillmentOrders: [
+    {
+      value: 'fulfillment_orders__id',
+      name: 'Id',
+      description: 'The ID for the fulfillment order.',
+    },
+    {
+      value: 'fulfillment_orders__assigned_location_id',
+      name: 'Location Id',
+      description: `The ID of the location that has been assigned to do the work.`,
+    },
+    {
+      value: 'fulfillment_orders__status',
+      name: 'Status',
+      description: `The status of the fulfillment order.`,
     },
   ],
 };

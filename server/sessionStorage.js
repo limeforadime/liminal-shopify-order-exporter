@@ -44,6 +44,7 @@ const loadCallback = async (id) => {
     if (sessionResult) {
       logger.info('sessionStorage->loadCallback: ', 'Loaded session model');
       const session = JSON.parse(cryption.decrypt(sessionResult.content));
+      // console.log(session.accessToken);
       return session;
     } else {
       return undefined;

@@ -21,43 +21,47 @@ const profileSchema = new Schema({
     },
     fields: {
       checkedMainState: {
-        type: [Boolean],
+        type: Object,
         required: true,
       },
       checkedCustomerState: {
-        type: [Boolean],
+        type: Object,
         required: true,
       },
       checkedLineItemsState: {
-        type: [Boolean],
+        type: Object,
         required: true,
       },
       checkedTransactionsState: {
-        type: [Boolean],
+        type: Object,
         required: true,
       },
       checkedBillingAddressState: {
-        type: [Boolean],
+        type: Object,
         required: true,
       },
       checkedDiscountCodesState: {
-        type: [Boolean],
+        type: Object,
         required: true,
       },
       checkedShippingAddressState: {
-        type: [Boolean],
+        type: Object,
         required: true,
       },
       checkedShippingLinesState: {
-        type: [Boolean],
+        type: Object,
         required: true,
       },
       checkedTaxLinesState: {
-        type: [Boolean],
+        type: Object,
         required: true,
       },
-      checkedFulfillmentState: {
-        type: [Boolean],
+      checkedFulfillmentsState: {
+        type: Object,
+        required: true,
+      },
+      checkedFulfillmentOrdersState: {
+        type: Object,
         required: true,
       },
     },

@@ -95,9 +95,18 @@ const FieldsCard = () => {
         accessibilityId={'fulfillment-fields-dropdown'}
         height="130px"
         initialOpenState={false}
-        sourceData={fieldsSourceData.fulfillment}
-        checkedState={fieldsState.checkedFulfillmentState}
-        setCheckedState={fieldsState.setCheckedFulfillmentState}
+        sourceData={fieldsSourceData.fulfillments}
+        checkedState={fieldsState.checkedFulfillmentsState}
+        setCheckedState={fieldsState.setCheckedFulfillmentsState}
+      />
+      <FieldsDropdown
+        buttonTitle="Fulfillment Orders"
+        accessibilityId={'fulfillment-orders-fields-dropdown'}
+        height="130px"
+        initialOpenState={false}
+        sourceData={fieldsSourceData.fulfillmentOrders}
+        checkedState={fieldsState.checkedFulfillmentOrdersState}
+        setCheckedState={fieldsState.setCheckedFulfillmentOrdersState}
       />
     </Card>
   );

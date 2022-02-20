@@ -13,22 +13,48 @@ const FieldsDropdown = ({
   setCheckedState,
 }) => {
   const [openState, setOpenState] = useState(initialOpenState);
-  const [totalChecked, setTotalChecked] = useState(checkedState.filter((val) => val == true).length);
+  const [totalChecked, setTotalChecked] = useState(
+    Object.values(checkedState).filter((val) => val == true).length
+  );
   const [minWidthMatches, setMinWidthMatches] = useState(false);
 
+  // Performs conversion from object to array back to object in order to invert the selected key's value
   const handleChange = (position) => {
-    const updatedCheckedState = checkedState.map((item, index) => (index === position ? !item : item));
+    const updatedCheckedState = Object.fromEntries(
+      Object.entries(checkedState).map(([key, value], index) => {
+        return [key, index === position ? !value : value];
+      })
+    );
     setCheckedState(updatedCheckedState);
   };
   const handleToggle = useCallback(() => setOpenState((open) => !open), []);
+
   const handleSelectAll = useCallback(() => {
-    let atLeastOneTrue = checkedState.some((val) => val == true);
+    let atLeastOneTrue = Object.values(checkedState).some((val) => val == true);
     if (atLeastOneTrue) {
-      let allTrue = checkedState.every((val) => val == true);
-      if (allTrue) setCheckedState(new Array(checkedState.length).fill(false));
-      else setCheckedState(new Array(checkedState.length).fill(true));
+      let allTrue = Object.values(checkedState).every((val) => val == true);
+      if (allTrue) {
+        const updatedStateToAllFalse = Object.fromEntries(
+          Object.entries(checkedState).map(([key]) => {
+            return [key, false];
+          })
+        );
+        setCheckedState(updatedStateToAllFalse);
+      } else {
+        const updatedStateToAllTrue = Object.fromEntries(
+          Object.entries(checkedState).map(([key]) => {
+            return [key, true];
+          })
+        );
+        setCheckedState(updatedStateToAllTrue);
+      }
     } else {
-      setCheckedState(new Array(checkedState.length).fill(true));
+      const updatedStateToAllTrue = Object.fromEntries(
+        Object.entries(checkedState).map(([key]) => {
+          return [key, true];
+        })
+      );
+      setCheckedState(updatedStateToAllTrue);
     }
   });
 
@@ -36,7 +62,7 @@ const FieldsDropdown = ({
     window.matchMedia('(min-width: 35em)').addEventListener('change', (e) => setMinWidthMatches(e.matches));
   }, []);
   useEffect(() => {
-    setTotalChecked(checkedState.filter((val) => val == true).length);
+    setTotalChecked(Object.values(checkedState).filter((val) => val == true).length);
   }, [checkedState]);
 
   return (
@@ -72,15 +98,12 @@ const FieldsDropdown = ({
                   <div style={{ display: 'flex' }}>
                     <Checkbox
                       label={name}
-                      checked={checkedState[index]}
+                      checked={Object.values(checkedState)[index]}
                       onChange={() => handleChange(index)}
                     />
                     <div className={styles.tooltip}>
                       <Icon source={InfoMinor} color="base" />
-                      <div
-                        className={styles.tooltiptext}
-                        dangerouslySetInnerHTML={{ __html: description }}
-                      ></div>
+                      <div className={styles.tooltiptext} dangerouslySetInnerHTML={{ __html: description }}></div>
                     </div>
                   </div>
                 </div>

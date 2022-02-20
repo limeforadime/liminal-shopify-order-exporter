@@ -2,7 +2,7 @@ import Router from '@koa/router';
 import { verifyRequest } from 'simple-koa-shopify-auth';
 import Shopify from '@shopify/shopify-api';
 const orderCountRoute = new Router();
-import verifySessionActive from '../../../utils/server/middleware/verifySessionActive';
+import verifySessionActive from '../../../../utils/server/middleware/verifySessionActive';
 
 // Found out that Shopify's api route for order count doesn't have consistent
 // parameters with the get all orders route, so I can't take the user's query
@@ -21,7 +21,7 @@ orderCountRoute.get('/api/orderCount', verifyRequest({ returnHeader: true }), as
       query: { limit: '1', status: '', fields: 'null' },
     });
     console.log(`Order count: ${orders.body.orders.length}`);
-    ctx.response.body = orders.body.orders.length;
+    ctx.body = orders.body.orders.length;
   } catch (err) {
     console.log(err);
     ctx.throw(500, 'Server thrown error inside Order Count route');

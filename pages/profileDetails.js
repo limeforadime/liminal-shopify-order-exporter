@@ -24,6 +24,7 @@ import { fieldsSourceData } from '../components/Fields/fieldsData';
 import FilterCard from '../components/Filtering/FilterCard';
 import FieldsCard from '../components/Fields/FieldsCard';
 import FieldsStateWrapper from '../components/Fields/FieldsStateWrapper';
+import { initialFieldsState } from '../components/Fields/initialFieldsState';
 
 const ProfileDetails = () => {
   const appState = useContext(AppStateContext);
@@ -45,36 +46,22 @@ const ProfileDetails = () => {
   const [fileName, setFileName] = useState('');
 
   /* Checked Fields State */
-  const [checkedMainState, setCheckedMainState] = useState(
-    new Array(fieldsSourceData.main.length).fill(false)
-  );
-  const [checkedCustomerState, setCheckedCustomerState] = useState(
-    new Array(fieldsSourceData.customer.length).fill(false)
-  );
-  const [checkedLineItemsState, setCheckedLineItemsState] = useState(
-    new Array(fieldsSourceData.lineItems.length).fill(false)
-  );
-  const [checkedTransactionsState, setCheckedTransactionsState] = useState(
-    new Array(fieldsSourceData.transactions.length).fill(false)
-  );
-  const [checkedBillingAddressState, setCheckedBillingAddressState] = useState(
-    new Array(fieldsSourceData.billingAddress.length).fill(false)
-  );
-  const [checkedDiscountCodesState, setCheckedDiscountCodesState] = useState(
-    new Array(fieldsSourceData.discountCodes.length).fill(false)
-  );
+  const [checkedMainState, setCheckedMainState] = useState(initialFieldsState.main);
+  const [checkedCustomerState, setCheckedCustomerState] = useState(initialFieldsState.customer);
+  const [checkedLineItemsState, setCheckedLineItemsState] = useState(initialFieldsState.lineItems);
+  const [checkedTransactionsState, setCheckedTransactionsState] = useState(initialFieldsState.transactions);
+  const [checkedBillingAddressState, setCheckedBillingAddressState] = useState(initialFieldsState.billingAddress);
+  const [checkedDiscountCodesState, setCheckedDiscountCodesState] = useState(initialFieldsState.discountCodes);
   const [checkedShippingAddressState, setCheckedShippingAddressState] = useState(
-    new Array(fieldsSourceData.shippingAddress.length).fill(false)
+    initialFieldsState.shippingAddress
   );
-  const [checkedShippingLinesState, setCheckedShippingLinesState] = useState(
-    new Array(fieldsSourceData.shippingLines.length).fill(false)
+  const [checkedShippingLinesState, setCheckedShippingLinesState] = useState(initialFieldsState.shippingLines);
+  const [checkedTaxLinesState, setCheckedTaxLinesState] = useState(initialFieldsState.taxLines);
+  const [checkedFulfillmentsState, setCheckedFulfillmentsState] = useState(initialFieldsState.fulfillments);
+  const [checkedFulfillmentOrdersState, setCheckedFulfillmentOrdersState] = useState(
+    initialFieldsState.fulfillmentOrders
   );
-  const [checkedTaxLinesState, setCheckedTaxLinesState] = useState(
-    new Array(fieldsSourceData.taxLines.length).fill(false)
-  );
-  const [checkedFulfillmentState, setCheckedFulfillmentState] = useState(
-    new Array(fieldsSourceData.fulfillment.length).fill(false)
-  );
+
   const fieldsState = {
     checkedMainState,
     checkedCustomerState,
@@ -85,7 +72,8 @@ const ProfileDetails = () => {
     checkedShippingAddressState,
     checkedShippingLinesState,
     checkedTaxLinesState,
-    checkedFulfillmentState,
+    checkedFulfillmentsState,
+    checkedFulfillmentOrdersState,
     setCheckedMainState,
     setCheckedCustomerState,
     setCheckedLineItemsState,
@@ -95,7 +83,8 @@ const ProfileDetails = () => {
     setCheckedShippingAddressState,
     setCheckedShippingLinesState,
     setCheckedTaxLinesState,
-    setCheckedFulfillmentState,
+    setCheckedFulfillmentsState,
+    setCheckedFulfillmentOrdersState,
   };
 
   // if in edit mode (isNewProfile == false), get data from database for given ID
@@ -123,7 +112,8 @@ const ProfileDetails = () => {
           setCheckedShippingAddressState(fields.checkedShippingAddressState);
           setCheckedShippingLinesState(fields.checkedShippingLinesState);
           setCheckedTaxLinesState(fields.checkedTaxLinesState);
-          setCheckedFulfillmentState(fields.checkedFulfillmentState);
+          setCheckedFulfillmentsState(fields.checkedFulfillmentsState);
+          setCheckedFulfillmentOrdersState(fields.checkedFulfillmentOrdersState);
         }
         setIsLoading(false);
       } catch (err) {
@@ -132,6 +122,37 @@ const ProfileDetails = () => {
     };
     getData();
   }, []);
+
+  const createFieldsQueryStringRefactorLater = async () => {
+    // Goal: run through each field state. If true, lookup corresponding element from source data and get its name,
+    // and then add it to a running query object to then convert into a URLSearchparams string.
+    // Must run for each category, as some are handled differently (separate API calls).
+    // DEFINITELY optimize this later -- especially consolidate all promises into promise.all
+    const fieldsParams = { fields: [] };
+
+    // build object for main
+    if (checkedMainState.some((val) => val == true)) {
+      // skips if none of these states are checked
+      fieldsSourceData.main.forEach((val, index) => {
+        if (checkedMainState[index] == true) fieldsParams.fields.push(val.value);
+      });
+    }
+
+    // build object for customer
+    if (checkedCustomerState.some((val) => val == true)) fieldParams.fields.push('customer');
+    if (checkedLineItemsState.some((val) => val == true)) fieldParams.fields.push('line_items');
+    try {
+      if (checkedTransactionsState.some((val) => val == true)) {
+        const res = await userLoggedInFetch(app)(`${app.localOrigin}/api/orders?fields=line_items`);
+        if (res.ok) {
+          await res.json();
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    console.log(new URLSearchParams(fieldsParams).toString());
+  };
 
   const handleProfileNameChange = useCallback((newValue) => setProfileName(newValue));
   const handleFileNameChange = useCallback((newValue) => setFileName(newValue));
@@ -227,11 +248,15 @@ const ProfileDetails = () => {
           checkedShippingAddressState,
           checkedShippingLinesState,
           checkedTaxLinesState,
-          checkedFulfillmentState,
+          checkedFulfillmentsState,
+          checkedFulfillmentOrdersState,
         },
       };
       if (!isNew) body = { ...body, id };
-
+      console.log('body:');
+      console.log(body);
+      console.log('JSON.stringifed:');
+      console.log(JSON.stringify(body, null, '\t'));
       const res = await userLoggedInFetch(app)(route, {
         method,
         headers: {
@@ -272,8 +297,8 @@ const ProfileDetails = () => {
         <Page title="Loading Data..." />
       ) : (
         <Page
-          title="Main Page"
-          subtitle="Here's where the magic happens"
+          title="Export profile options"
+          subtitle="Customize your export profile"
           breadcrumbs={[{ content: 'Home', onAction: () => router.push('/') }]}
           primaryAction={
             isNewProfile
@@ -328,14 +353,14 @@ const ProfileDetails = () => {
                     <Button
                       size="large"
                       onClick={() => {
-                        Router.events.emit('routeChangeError', () =>
-                          console.log('emitting route change error')
-                        );
+                        Router.events.emit('routeChangeError', () => console.log('emitting route change error'));
                       }}
                     >
                       TestError
                     </Button>
-
+                    <Button size="large" onClick={createFieldsQueryStringRefactorLater}>
+                      Fields State Query String
+                    </Button>
                     {/* </Card> */}
                   </Collapsible>
                 </Stack>
