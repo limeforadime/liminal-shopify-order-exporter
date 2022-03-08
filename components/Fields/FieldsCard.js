@@ -1,6 +1,6 @@
 import { Card } from '@shopify/polaris';
 import React, { useContext } from 'react';
-import { fieldsSourceData } from './fieldsData';
+import { fieldsSourceData } from './data/fieldsData';
 import FieldsDropdown from './FieldsDropdown';
 import { FieldsStateContext } from './FieldsStateWrapper';
 

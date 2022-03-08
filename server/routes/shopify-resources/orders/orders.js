@@ -6,10 +6,10 @@ const ordersRoute = new Router();
 ordersRoute.get('/api/orders', verifyRequest({ returnHeader: true }), async (ctx) => {
   try {
     const query = ctx.query;
-    // const { fields } = query;
-    console.log('All orders route hit');
+    const { fields } = query;
     const session = await Shopify.Utils.loadCurrentSession(ctx.req, ctx.res);
     const client = new Shopify.Clients.Rest(session.shop, session.accessToken);
+    console.log(`query: ${JSON.stringify(query, null, '  ')}`);
     const orders = await client.get({
       path: 'orders',
       query: query,

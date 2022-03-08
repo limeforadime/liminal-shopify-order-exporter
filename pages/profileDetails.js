@@ -13,14 +13,19 @@ import {
   TextField,
   TextStyle,
 } from '@shopify/polaris';
+import flatten from 'flat';
+import papa from 'papaparse';
 import { useAppBridge } from '@shopify/app-bridge-react';
 import { Redirect } from '@shopify/app-bridge/actions';
 import userLoggedInFetch from '../utils/client/userLoggedInFetch';
 import { AppStateContext } from '../components/AppStateWrapper';
 import Router, { useRouter } from 'next/router';
 import jwtDecode from 'jwt-decode';
+import moment from 'moment';
+import convertTagsToQueryString from '../utils/client/convertTagsToQueryString';
+import { allStatusChoices } from '../components/Filtering/data/allStatusChoicesData';
 import { getSessionToken } from '@shopify/app-bridge-utils';
-import { fieldsSourceData } from '../components/Fields/fieldsData';
+import { fieldsSourceData } from '../components/Fields/data/fieldsData';
 import FilterCard from '../components/Filtering/FilterCard';
 import FieldsCard from '../components/Fields/FieldsCard';
 import FieldsStateWrapper from '../components/Fields/FieldsStateWrapper';
@@ -123,35 +128,82 @@ const ProfileDetails = () => {
     getData();
   }, []);
 
-  const createFieldsQueryStringRefactorLater = async () => {
-    // Goal: run through each field state. If true, lookup corresponding element from source data and get its name,
-    // and then add it to a running query object to then convert into a URLSearchparams string.
-    // Must run for each category, as some are handled differently (separate API calls).
-    // DEFINITELY optimize this later -- especially consolidate all promises into promise.all
-    const fieldsParams = { fields: [] };
-
-    // build object for main
-    if (checkedMainState.some((val) => val == true)) {
-      // skips if none of these states are checked
-      fieldsSourceData.main.forEach((val, index) => {
-        if (checkedMainState[index] == true) fieldsParams.fields.push(val.value);
+  const buildFieldsToRestrictDataBy = () => {
+    const fields = ['id'];
+    if (Object.values(checkedMainState).some((val) => val == true)) {
+      fieldsSourceData.main.forEach(({ value }, index) => {
+        if (Object.values(checkedMainState)[index] == true) fields.push(value);
       });
     }
-
-    // build object for customer
-    if (checkedCustomerState.some((val) => val == true)) fieldParams.fields.push('customer');
-    if (checkedLineItemsState.some((val) => val == true)) fieldParams.fields.push('line_items');
+    if (Object.values(checkedCustomerState).some((val) => val == true)) fields.push('customer');
+    if (Object.values(checkedLineItemsState).some((val) => val == true)) fields.push('line_items');
+    if (Object.values(checkedBillingAddressState).some((val) => val == true)) fields.push('billing_address');
+    if (Object.values(checkedDiscountCodesState).some((val) => val == true)) fields.push('discount_codes');
+    if (Object.values(checkedShippingAddressState).some((val) => val == true)) fields.push('shipping_address');
+    if (Object.values(checkedShippingLinesState).some((val) => val == true)) fields.push('shipping_lines');
+    if (Object.values(checkedTaxLinesState).some((val) => val == true)) fields.push('tax_lines');
+    return fields;
+  };
+  const fetchOrders = async () => {
+    let fetchedOrders = null;
+    let fields = buildFieldsToRestrictDataBy();
+    // fetch order data from shopify based on given filters
     try {
-      if (checkedTransactionsState.some((val) => val == true)) {
-        const res = await userLoggedInFetch(app)(`${app.localOrigin}/api/orders?fields=line_items`);
-        if (res.ok) {
-          await res.json();
-        }
+      const formattedTags = convertTagsToQueryString(selectedTags, moment, allStatusChoices);
+      const url =
+        `${app.localOrigin}/api/orders` +
+        formattedTags +
+        new URLSearchParams({
+          shop,
+          fields,
+        });
+      console.log(`fetch url: ${url}`);
+      const res = await userLoggedInFetch(app)(url);
+      if (res.ok) {
+        fetchedOrders = await res.json();
       }
     } catch (err) {
       console.log(err);
     }
-    console.log(new URLSearchParams(fieldsParams).toString());
+    return fetchedOrders;
+  };
+  const appendDataToOrders = async () => {
+    try {
+      let fetchedOrders = await fetchOrders();
+      if (fetchedOrders?.length > 0) {
+        for (let order of fetchedOrders) {
+          // Must fetch transactions, fulfillments, and fulfillmentOrders for each order, and batch the call with Promise.all
+          let promises = [];
+          if (Object.values(checkedTransactionsState).some((val) => val == true)) {
+            promises.push(userLoggedInFetch(app)(`${app.localOrigin}/api/transactions?orderId=${order.id}`));
+          }
+          if (Object.values(checkedFulfillmentsState).some((val) => val == true)) {
+            promises.push(userLoggedInFetch(app)(`${app.localOrigin}/api/fulfillments?orderId=${order.id}`));
+          }
+          if (Object.values(checkedFulfillmentOrdersState).some((val) => val == true)) {
+            promises.push(userLoggedInFetch(app)(`${app.localOrigin}/api/fulfillment_orders?orderId=${order.id}`));
+          }
+          if (promises.length > 0) {
+            const resolvedPromises = await Promise.all(promises);
+            const [transactionsData, fulfillmentsData, fulfillmentOrdersData] = resolvedPromises.map(
+              async (promise) => {
+                const res = await promise.json();
+                return res;
+              }
+            );
+            transactionsData && (order.transactions = await transactionsData);
+            fulfillmentsData && (order.fulfillments = await fulfillmentsData);
+            fulfillmentOrdersData && (order.filfillmentOrders = await fulfillmentOrdersData);
+          }
+        }
+        console.log(fetchedOrders);
+        return fetchedOrders;
+      } else {
+        throw new Error('Could not retrieve fetchedOrders');
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handleProfileNameChange = useCallback((newValue) => setProfileName(newValue));
@@ -291,6 +343,25 @@ const ProfileDetails = () => {
       console.error(err);
     }
   });
+
+  const pagePrimaryAction = isNewProfile
+    ? {
+        content: 'Create export profile',
+        onAction: () => handleCreateOrEditProfile({ isNew: true }),
+      }
+    : {
+        content: 'Update export profile',
+        onAction: () => handleCreateOrEditProfile({ isNew: false }),
+      };
+  const pageSecondaryAction = isNewProfile
+    ? undefined
+    : [
+        {
+          content: 'Delete export profile',
+          onAction: handleDeleteProfile,
+          destructive: true,
+        },
+      ];
   return (
     <>
       {isLoading ? (
@@ -300,17 +371,7 @@ const ProfileDetails = () => {
           title="Export profile options"
           subtitle="Customize your export profile"
           breadcrumbs={[{ content: 'Home', onAction: () => router.push('/') }]}
-          primaryAction={
-            isNewProfile
-              ? {
-                  content: 'Create export profile',
-                  onAction: () => handleCreateOrEditProfile({ isNew: true }),
-                }
-              : {
-                  content: 'Update export profile',
-                  onAction: () => handleCreateOrEditProfile({ isNew: false }),
-                }
-          }
+          primaryAction={pagePrimaryAction}
         >
           <Layout>
             <Layout.Section>
@@ -358,8 +419,104 @@ const ProfileDetails = () => {
                     >
                       TestError
                     </Button>
-                    <Button size="large" onClick={createFieldsQueryStringRefactorLater}>
-                      Fields State Query String
+                    <Button size="large" onClick={appendDataToOrders}>
+                      ORDERS DEBUG BUTTON
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        let data = JSON.parse(`{
+                          "id": 4201397452954,
+                          "buyer_accepts_marketing": false,
+                          "closed_at": null,
+                          "currency": "USD",
+                          "email": "",
+                          "financial_status": "paid",
+                          "fulfillment_status": "fulfilled",
+                          "location_id": 47856484506,
+                          "name": "#1008",
+                          "note": null,
+                          "note_attributes": [],
+                          "phone": null,
+                          "processed_at": "2021-10-28T06:11:56-04:00",
+                          "referring_site": null,
+                          "tags": "",
+                          "taxes_included": false,
+                          "total_discounts": "0.00",
+                          "total_tax": "0.00",
+                          "total_weight": 0,
+                          "transactions": [
+                            {
+                              "id": 5169197514906,
+                              "order_id": 4201397452954,
+                              "kind": "sale",
+                              "gateway": "manual",
+                              "status": "pending",
+                              "message": "Pending the manual payment from the buyer",
+                              "created_at": "2021-10-28T06:11:56-04:00",
+                              "test": false,
+                              "authorization": null,
+                              "location_id": null,
+                              "user_id": null,
+                              "parent_id": null,
+                              "processed_at": "2021-10-28T06:11:56-04:00",
+                              "device_id": null,
+                              "error_code": null,
+                              "source_name": "1830279",
+                              "receipt": {},
+                              "amount": "7.00",
+                              "currency": "USD",
+                              "admin_graphql_api_id": "gid://shopify/OrderTransaction/5169197514906"
+                            },
+                            {
+                              "id": 5169202528410,
+                              "order_id": 4201397452954,
+                              "kind": "sale",
+                              "gateway": "manual",
+                              "status": "success",
+                              "message": "Marked the manual payment as received",
+                              "created_at": "2021-10-28T06:15:58-04:00",
+                              "test": false,
+                              "authorization": null,
+                              "location_id": null,
+                              "user_id": null,
+                              "parent_id": 5169197514906,
+                              "processed_at": "2021-10-28T06:15:58-04:00",
+                              "device_id": null,
+                              "error_code": null,
+                              "source_name": "1830279",
+                              "receipt": {},
+                              "amount": "7.00",
+                              "currency": "USD",
+                              "admin_graphql_api_id": "gid://shopify/OrderTransaction/5169202528410"
+                            }
+                          ],
+                          "fulfillments": [
+                            {
+                              "id": 3689810493594,
+                              "order_id": 4201397452954,
+                              "status": "success",
+                              "created_at": "2021-10-28T06:15:47-04:00",
+                              "service": "manual",
+                              "updated_at": "2021-10-28T06:15:47-04:00",
+                              "tracking_company": null,
+                              "shipment_status": null,
+                              "location_id": 47856484506,
+                              "origin_address": null,
+                              "tracking_number": null,
+                              "tracking_numbers": [],
+                              "tracking_url": null,
+                              "tracking_urls": [],
+                              "receipt": {},
+                              "name": "#1008.1",
+                              "admin_graphql_api_id": "gid://shopify/Fulfillment/3689810493594"
+                            }
+                          ],
+                          "filfillmentOrders": []
+                        }`);
+                        console.log(flatten(data, { delimiter: '/' }));
+                      }}
+                    >
+                      Test flatten
                     </Button>
                     {/* </Card> */}
                   </Collapsible>
@@ -385,30 +542,7 @@ const ProfileDetails = () => {
               </Card>
             </Layout.Section>
           </Layout>
-          <PageActions
-            primaryAction={
-              isNewProfile
-                ? {
-                    content: 'Create export profile',
-                    onAction: () => handleCreateOrEditProfile({ isNew: true }),
-                  }
-                : {
-                    content: 'Update export profile',
-                    onAction: () => handleCreateOrEditProfile({ isNew: false }),
-                  }
-            }
-            secondaryActions={
-              isNewProfile
-                ? undefined
-                : [
-                    {
-                      content: 'Delete export profile',
-                      onAction: handleDeleteProfile,
-                      destructive: true,
-                    },
-                  ]
-            }
-          />
+          <PageActions primaryAction={pagePrimaryAction} secondaryActions={pageSecondaryAction} />
         </Page>
       )}
     </>

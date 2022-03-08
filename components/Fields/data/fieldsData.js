@@ -14,7 +14,7 @@ export const fieldsSourceData = {
     },
     {
       value: 'closed_at',
-      name: 'Cancelled at',
+      name: 'Closed at',
       description: 'The date and time when the order was closed.',
     },
     {
@@ -493,6 +493,7 @@ export const fieldsSourceData = {
       description: `The URLs of tracking pages for the fulfillment.`,
     },
   ],
+  // https://shopify.dev/api/admin-rest/2022-01/resources/fulfillmentorder#[get]/admin/api/2022-01/orders/{order_id}/fulfillment_orders.json
   fulfillmentOrders: [
     {
       value: 'fulfillment_orders__id',

@@ -26,6 +26,7 @@ const AppStateWrapper = ({ children }) => {
   const [isToast, setIsToast] = useState(false);
   const [isToastError, setIsToastError] = useState(true);
   const [toastMessage, setToastMessage] = useState('');
+
   useEffect(() => {
     async function getShop() {
       try {

@@ -10,6 +10,7 @@ import ordersRoute from './shopify-resources/orders/orders';
 import orderCountRoute from './shopify-resources/orders/orderCount';
 import transactionsRoute from './shopify-resources/transactions';
 import fulfillmentsRoute from './shopify-resources/fulfillments';
+import fulfillmentOrdersRoute from './shopify-resources/fulfillmentOrders';
 import profilesRoute from './profiles/profiles';
 
 const userRoutes = combineRouters(
@@ -21,7 +22,8 @@ const userRoutes = combineRouters(
   orderCountRoute,
   profilesRoute,
   transactionsRoute,
-  fulfillmentsRoute
+  fulfillmentsRoute,
+  fulfillmentOrdersRoute
 );
 
 export default userRoutes;

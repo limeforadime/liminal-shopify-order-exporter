@@ -2,22 +2,22 @@
 import Router from '@koa/router';
 import { verifyRequest } from 'simple-koa-shopify-auth';
 import Shopify from '@shopify/shopify-api';
-const fulfillmentsRoute = new Router();
+const fulfillmentOrdersRoute = new Router();
 
-fulfillmentsRoute.get('/api/fulfillments', verifyRequest({ returnHeader: true }), async (ctx) => {
+fulfillmentOrdersRoute.get('/api/fulfillment_orders', verifyRequest({ returnHeader: true }), async (ctx) => {
   try {
     const query = ctx.query;
     const { orderId } = query;
     const session = await Shopify.Utils.loadCurrentSession(ctx.req, ctx.res);
     const client = new Shopify.Clients.Rest(session.shop, session.accessToken);
-    const fulfillments = await client.get({
-      path: `orders/${orderId}/fulfillments`,
+    const fulfillmentOrders = await client.get({
+      path: `orders/${orderId}/fulfillment_orders`,
     });
-    ctx.body = fulfillments.body.fulfillments;
+    ctx.body = fulfillmentOrders.body.fulfillment_orders;
   } catch (err) {
     console.log(err);
-    ctx.throw(500, 'Server thrown error inside fulfillments route');
+    ctx.throw(500, 'Server thrown error inside fulfillment_orders route.');
   }
 });
 
-export default fulfillmentsRoute;
+export default fulfillmentOrdersRoute;

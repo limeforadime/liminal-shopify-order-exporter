@@ -7,12 +7,11 @@ const transactionsRoute = new Router();
 transactionsRoute.get('/api/transactions', verifyRequest({ returnHeader: true }), async (ctx) => {
   try {
     const query = ctx.query;
-    const { fields } = query;
+    const { orderId } = query;
     const session = await Shopify.Utils.loadCurrentSession(ctx.req, ctx.res);
     const client = new Shopify.Clients.Rest(session.shop, session.accessToken);
     const transactions = await client.get({
-      path: 'transactions',
-      query: query,
+      path: `orders/${orderId}/transactions`,
     });
     ctx.body = transactions.body.transactions;
   } catch (err) {

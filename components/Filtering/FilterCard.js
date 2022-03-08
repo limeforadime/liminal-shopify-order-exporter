@@ -14,6 +14,7 @@ import { useAppBridge } from '@shopify/app-bridge-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import userLoggedInFetch from '../../utils/client/userLoggedInFetch';
 import convertTagsToQueryString from '../../utils/client/convertTagsToQueryString';
+import { allStatusChoices } from './data/allStatusChoicesData';
 import CommonDatesRibbon from './CommonDatesRibbon';
 import DatePopover from './DatePopover';
 import StatusPopover from './StatusPopover';
@@ -24,30 +25,8 @@ const FilterCard = ({ selectedTags, setSelectedTags }) => {
   const app = useAppBridge();
   const [orderCount, setOrderCount] = useState(0);
 
-  let allStatusChoices = {
-    paymentStatusChoices: [
-      { label: 'Paid', value: 'paid' },
-      { label: 'Unpaid', value: 'unpaid' },
-      { label: 'Voided', value: 'voided' },
-      { label: 'Pending', value: 'pending' },
-      { label: 'Refunded', value: 'refunded' },
-      { label: 'Authorized', value: 'authorized' },
-      { label: 'Partially paid', value: 'partially_paid' },
-      { label: 'Partially refunded', value: 'partially_refunded' },
-    ],
-    statusChoices: [
-      { label: 'Open', value: 'open' },
-      { label: 'Archived', value: 'closed' },
-      { label: 'Cancelled', value: 'cancelled' },
-    ],
-    fulfillmentStatusChoices: [
-      { label: 'Shipped', value: 'shipped' },
-      { label: 'Partially fulfilled', value: 'partial' },
-      { label: 'Unfulfilled', value: 'unfulfilled' },
-    ],
-  };
-
   // Off temporarily
+  // Gets current count of orders that this query would retrieve, and updates label
   // useEffect(() => {
   //   const getOrderCount = async () => {
   //     try {
@@ -104,10 +83,7 @@ const FilterCard = ({ selectedTags, setSelectedTags }) => {
             <ButtonGroup segmented>
               <DatePopover addTag={addTag} />
               <StatusPopover addTag={addTag} statusChoices={allStatusChoices.statusChoices} />
-              <PaymentStatusPopover
-                addTag={addTag}
-                paymentStatusChoices={allStatusChoices.paymentStatusChoices}
-              />
+              <PaymentStatusPopover addTag={addTag} paymentStatusChoices={allStatusChoices.paymentStatusChoices} />
               <FulfillmentStatusPopover
                 addTag={addTag}
                 fulfillmentStatusChoices={allStatusChoices.fulfillmentStatusChoices}
@@ -119,9 +95,7 @@ const FilterCard = ({ selectedTags, setSelectedTags }) => {
           </Stack>
           <Stack spacing="tight">{tagMarkup}</Stack>
           <Subheading>Orders that match criteria: {orderCount}</Subheading>
-          <Button
-            onClick={() => console.log(convertTagsToQueryString(selectedTags, moment, allStatusChoices))}
-          >
+          <Button onClick={() => console.log(convertTagsToQueryString(selectedTags, moment, allStatusChoices))}>
             Test converting tags to query string
           </Button>
         </TextContainer>
