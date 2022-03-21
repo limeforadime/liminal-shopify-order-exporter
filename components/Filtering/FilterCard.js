@@ -12,8 +12,8 @@ import {
 import moment from 'moment';
 import { useAppBridge } from '@shopify/app-bridge-react';
 import React, { useCallback, useEffect, useState } from 'react';
-import userLoggedInFetch from '../../utils/client/userLoggedInFetch';
-import convertTagsToQueryString from '../../utils/client/convertTagsToQueryString';
+import userLoggedInFetch from 'utils/client/userLoggedInFetch';
+import convertTagsToQueryString from 'utils/client/convertTagsToQueryString';
 import { allStatusChoices } from './data/allStatusChoicesData';
 import CommonDatesRibbon from './CommonDatesRibbon';
 import DatePopover from './DatePopover';

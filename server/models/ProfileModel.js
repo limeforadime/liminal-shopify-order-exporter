@@ -14,7 +14,7 @@ const profileSchema = new Schema({
     required: true,
   },
   settings: {
-    global: {}, // will get to last
+    global: {},
     selectedTags: {
       type: [String],
       required: true,

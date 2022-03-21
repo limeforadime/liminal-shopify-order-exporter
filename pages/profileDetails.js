@@ -15,17 +15,16 @@ import {
 } from '@shopify/polaris';
 import flatten from 'flat';
 import papa from 'papaparse';
+import convertTagsToQueryString from '../utils/client/convertTagsToQueryString';
+import moment from 'moment';
+import { allStatusChoices } from '../components/Filtering/data/allStatusChoicesData';
 import { useAppBridge } from '@shopify/app-bridge-react';
 import { Redirect } from '@shopify/app-bridge/actions';
 import userLoggedInFetch from '../utils/client/userLoggedInFetch';
 import { AppStateContext } from '../components/AppStateWrapper';
 import Router, { useRouter } from 'next/router';
 import jwtDecode from 'jwt-decode';
-import moment from 'moment';
-import convertTagsToQueryString from '../utils/client/convertTagsToQueryString';
-import { allStatusChoices } from '../components/Filtering/data/allStatusChoicesData';
 import { getSessionToken } from '@shopify/app-bridge-utils';
-import { fieldsSourceData } from '../components/Fields/data/fieldsData';
 import FilterCard from '../components/Filtering/FilterCard';
 import FieldsCard from '../components/Fields/FieldsCard';
 import FieldsStateWrapper from '../components/Fields/FieldsStateWrapper';
@@ -128,84 +127,6 @@ const ProfileDetails = () => {
     getData();
   }, []);
 
-  const buildFieldsToRestrictDataBy = () => {
-    const fields = ['id'];
-    if (Object.values(checkedMainState).some((val) => val == true)) {
-      fieldsSourceData.main.forEach(({ value }, index) => {
-        if (Object.values(checkedMainState)[index] == true) fields.push(value);
-      });
-    }
-    if (Object.values(checkedCustomerState).some((val) => val == true)) fields.push('customer');
-    if (Object.values(checkedLineItemsState).some((val) => val == true)) fields.push('line_items');
-    if (Object.values(checkedBillingAddressState).some((val) => val == true)) fields.push('billing_address');
-    if (Object.values(checkedDiscountCodesState).some((val) => val == true)) fields.push('discount_codes');
-    if (Object.values(checkedShippingAddressState).some((val) => val == true)) fields.push('shipping_address');
-    if (Object.values(checkedShippingLinesState).some((val) => val == true)) fields.push('shipping_lines');
-    if (Object.values(checkedTaxLinesState).some((val) => val == true)) fields.push('tax_lines');
-    return fields;
-  };
-  const fetchOrders = async () => {
-    let fetchedOrders = null;
-    let fields = buildFieldsToRestrictDataBy();
-    // fetch order data from shopify based on given filters
-    try {
-      const formattedTags = convertTagsToQueryString(selectedTags, moment, allStatusChoices);
-      const url =
-        `${app.localOrigin}/api/orders` +
-        formattedTags +
-        new URLSearchParams({
-          shop,
-          fields,
-        });
-      console.log(`fetch url: ${url}`);
-      const res = await userLoggedInFetch(app)(url);
-      if (res.ok) {
-        fetchedOrders = await res.json();
-      }
-    } catch (err) {
-      console.log(err);
-    }
-    return fetchedOrders;
-  };
-  const appendDataToOrders = async () => {
-    try {
-      let fetchedOrders = await fetchOrders();
-      if (fetchedOrders?.length > 0) {
-        for (let order of fetchedOrders) {
-          // Must fetch transactions, fulfillments, and fulfillmentOrders for each order, and batch the call with Promise.all
-          let promises = [];
-          if (Object.values(checkedTransactionsState).some((val) => val == true)) {
-            promises.push(userLoggedInFetch(app)(`${app.localOrigin}/api/transactions?orderId=${order.id}`));
-          }
-          if (Object.values(checkedFulfillmentsState).some((val) => val == true)) {
-            promises.push(userLoggedInFetch(app)(`${app.localOrigin}/api/fulfillments?orderId=${order.id}`));
-          }
-          if (Object.values(checkedFulfillmentOrdersState).some((val) => val == true)) {
-            promises.push(userLoggedInFetch(app)(`${app.localOrigin}/api/fulfillment_orders?orderId=${order.id}`));
-          }
-          if (promises.length > 0) {
-            const resolvedPromises = await Promise.all(promises);
-            const [transactionsData, fulfillmentsData, fulfillmentOrdersData] = resolvedPromises.map(
-              async (promise) => {
-                const res = await promise.json();
-                return res;
-              }
-            );
-            transactionsData && (order.transactions = await transactionsData);
-            fulfillmentsData && (order.fulfillments = await fulfillmentsData);
-            fulfillmentOrdersData && (order.filfillmentOrders = await fulfillmentOrdersData);
-          }
-        }
-        console.log(fetchedOrders);
-        return fetchedOrders;
-      } else {
-        throw new Error('Could not retrieve fetchedOrders');
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   const handleProfileNameChange = useCallback((newValue) => setProfileName(newValue));
   const handleFileNameChange = useCallback((newValue) => setFileName(newValue));
   const handleDebugToggle = useCallback(() => setShowDebugButtons((prevState) => !prevState), []);
@@ -230,10 +151,20 @@ const ProfileDetails = () => {
   });
   const handleOrderButton = useCallback(async () => {
     try {
+      const formattedSelectTags = convertTagsToQueryString(selectedTags, moment, allStatusChoices);
+      // const url =
+      //   '/api/orders' +
+      //   formattedSelectedTags +
+      //   new URLSearchParams({
+      //     shop,
+      //     fields,
+      //   });
       const res = await userLoggedInFetch(app)(
         '/api/orders?' +
+          formattedSelectTags +
           new URLSearchParams({
-            created_at_max: '2021-07-27T03:25:40-04:00',
+            fields: ['id', 'name', 'customer'],
+            shop,
           })
       );
       if (res.status == 200) {
@@ -289,6 +220,7 @@ const ProfileDetails = () => {
     try {
       let body = {
         profileName,
+        global: {},
         selectedTags,
         fields: {
           checkedMainState,
@@ -419,9 +351,9 @@ const ProfileDetails = () => {
                     >
                       TestError
                     </Button>
-                    <Button size="large" onClick={appendDataToOrders}>
+                    {/* <Button size="large" onClick={appendDataToOrders}>
                       ORDERS DEBUG BUTTON
-                    </Button>
+                    </Button> */}
                     <Button
                       onClick={() => {
                         let data = JSON.parse(`{
@@ -517,6 +449,30 @@ const ProfileDetails = () => {
                       }}
                     >
                       Test flatten
+                    </Button>
+                    <Button
+                      size="large"
+                      onClick={async () => {
+                        try {
+                          console.log(`id: ${id}`);
+                          const res = await userLoggedInFetch(app)('/api/saveExportToDB', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ id }),
+                          });
+                          if (!res.ok) {
+                            throw new Error('Problem with saveExportToDB');
+                          }
+                          const orders = await res.json();
+                          console.log(orders);
+                        } catch (err) {
+                          console.log(err);
+                        }
+                      }}
+                    >
+                      TEST SENDING ID
                     </Button>
                     {/* </Card> */}
                   </Collapsible>

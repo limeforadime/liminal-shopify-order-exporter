@@ -8,9 +8,7 @@ import shopRedact from './gdpr/shopRedact';
 import isSessionActiveRoute from './isSessionActive';
 import ordersRoute from './shopify-resources/orders/orders';
 import orderCountRoute from './shopify-resources/orders/orderCount';
-import transactionsRoute from './shopify-resources/transactions';
-import fulfillmentsRoute from './shopify-resources/fulfillments';
-import fulfillmentOrdersRoute from './shopify-resources/fulfillmentOrders';
+import saveExportToDB from './shopify-resources/orders/saveExportToDB';
 import profilesRoute from './profiles/profiles';
 
 const userRoutes = combineRouters(
@@ -20,10 +18,8 @@ const userRoutes = combineRouters(
   isSessionActiveRoute,
   ordersRoute,
   orderCountRoute,
-  profilesRoute,
-  transactionsRoute,
-  fulfillmentsRoute,
-  fulfillmentOrdersRoute
+  saveExportToDB,
+  profilesRoute
 );
 
 export default userRoutes;

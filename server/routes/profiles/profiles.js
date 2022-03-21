@@ -2,14 +2,12 @@ import Router from '@koa/router';
 import bodyParser from 'koa-bodyparser';
 import { verifyRequest } from 'simple-koa-shopify-auth';
 import Shopify from '@shopify/shopify-api';
-import ProfileModel from '../../models/ProfileModel';
-import ShopModel from '../../models/ShopModel';
-import { getShopFromAuthHeader } from '../../../utils/server/getShopFromAuthHeader';
+import ProfileModel from 'server/models/ProfileModel.js';
+import ShopModel from 'server/models/ShopModel';
+import { getShopFromAuthHeader } from 'utils/server/getShopFromAuthHeader';
 const profilesRoute = new Router();
-
 // shop name for temp debugging/development
 const shop = 'test-store-testing-testing-wuddup.myshopify.com';
-
 // GET all profile names only
 profilesRoute.get('/api/profiles', async (ctx, next) => {
   // const shop = ctx.query.shop; // being manually set for now at top of file
@@ -47,7 +45,7 @@ profilesRoute.post(
     try {
       if (Object.keys(ctx.request.body).length == 0) ctx.throw(400, 'Invalid body');
 
-      const { profileName, fields, selectedTags } = ctx.request.body;
+      const { profileName, fields, selectedTags, global } = ctx.request.body;
       // const shop = getShopFromAuthHeader(ctx);
       if (!shop) ctx.throw(400, 'Couldnt get shop from header');
       if (!profileName || !fields || !selectedTags) ctx.throw(400, 'Bad input');
@@ -56,7 +54,7 @@ profilesRoute.post(
       console.log(fields);
       const foundShop = await ShopModel.findOne({ shop }).exec();
       if (!foundShop) throw new Error('Couldnt retrieve shop from database');
-      await foundShop.addNewProfile(profileName, fields, selectedTags);
+      await foundShop.addNewProfile(profileName, global, fields, selectedTags);
       ctx.body = {
         message: 'cool, received it. ',
       };

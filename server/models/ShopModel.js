@@ -26,12 +26,12 @@ const shopSchema = new Schema(
   { timestamps: true }
 );
 
-shopSchema.methods.addNewProfile = async function (profileName, fields, selectedTags) {
+shopSchema.methods.addNewProfile = async function (profileName, global, fields, selectedTags) {
   const newProfile = await ProfileModel.create({
     ownerShop: this.shop,
     name: profileName,
     settings: {
-      global: {},
+      global,
       selectedTags,
       fields,
     },
