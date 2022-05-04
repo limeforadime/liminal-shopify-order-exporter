@@ -7,7 +7,7 @@ import { Provider as AppBridgeProvider, useAppBridge } from '@shopify/app-bridge
 
 import { ApolloProvider, ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';
 import ClientRouter from '../components/ClientRouter.js';
-import userLoggedInFetch from '../utils/client/userLoggedInFetch.js';
+import userLoggedInFetch from '../utils/userLoggedInFetch.js';
 import AppStateWrapper from '../components/AppStateWrapper';
 
 function MyProvider(props) {

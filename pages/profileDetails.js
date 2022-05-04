@@ -15,12 +15,12 @@ import {
 } from '@shopify/polaris';
 import flatten from 'flat';
 import papa from 'papaparse';
-import convertTagsToQueryString from '../utils/client/convertTagsToQueryString';
+import convertTagsToQueryString from '../utils/convertTagsToQueryString';
 import moment from 'moment';
 import { allStatusChoices } from '../components/Filtering/data/allStatusChoicesData';
 import { useAppBridge } from '@shopify/app-bridge-react';
 import { Redirect } from '@shopify/app-bridge/actions';
-import userLoggedInFetch from '../utils/client/userLoggedInFetch';
+import userLoggedInFetch from '../utils/userLoggedInFetch';
 import { AppStateContext } from '../components/AppStateWrapper';
 import Router, { useRouter } from 'next/router';
 import jwtDecode from 'jwt-decode';
@@ -39,7 +39,7 @@ const ProfileDetails = () => {
   // TODO: error handling if router.query.isNewProfile is empty
   let { isNewProfile, id } = router.query;
   isNewProfile = JSON.parse(isNewProfile); // convert string to boolean
-  // TODO handle checking id
+  // TODO handle checking if id exists and is valid
 
   const [profileName, setProfileName] = useState('');
   const [showError, setShowError] = useState(false);
@@ -52,18 +52,18 @@ const ProfileDetails = () => {
   /* Checked Fields State */
   const [checkedMainState, setCheckedMainState] = useState(initialFieldsState.main);
   const [checkedCustomerState, setCheckedCustomerState] = useState(initialFieldsState.customer);
-  const [checkedLineItemsState, setCheckedLineItemsState] = useState(initialFieldsState.lineItems);
+  const [checkedLineItemsState, setCheckedLineItemsState] = useState(initialFieldsState.line_items);
   const [checkedTransactionsState, setCheckedTransactionsState] = useState(initialFieldsState.transactions);
-  const [checkedBillingAddressState, setCheckedBillingAddressState] = useState(initialFieldsState.billingAddress);
-  const [checkedDiscountCodesState, setCheckedDiscountCodesState] = useState(initialFieldsState.discountCodes);
+  const [checkedBillingAddressState, setCheckedBillingAddressState] = useState(initialFieldsState.billing_address);
+  const [checkedDiscountCodesState, setCheckedDiscountCodesState] = useState(initialFieldsState.discount_codes);
   const [checkedShippingAddressState, setCheckedShippingAddressState] = useState(
-    initialFieldsState.shippingAddress
+    initialFieldsState.shipping_address
   );
-  const [checkedShippingLinesState, setCheckedShippingLinesState] = useState(initialFieldsState.shippingLines);
-  const [checkedTaxLinesState, setCheckedTaxLinesState] = useState(initialFieldsState.taxLines);
+  const [checkedShippingLinesState, setCheckedShippingLinesState] = useState(initialFieldsState.shipping_lines);
+  const [checkedTaxLinesState, setCheckedTaxLinesState] = useState(initialFieldsState.tax_lines);
   const [checkedFulfillmentsState, setCheckedFulfillmentsState] = useState(initialFieldsState.fulfillments);
   const [checkedFulfillmentOrdersState, setCheckedFulfillmentOrdersState] = useState(
-    initialFieldsState.fulfillmentOrders
+    initialFieldsState.fulfillment_orders
   );
 
   const fieldsState = {

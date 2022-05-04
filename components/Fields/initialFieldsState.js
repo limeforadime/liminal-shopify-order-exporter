@@ -1,9 +1,12 @@
-// to populate the fields again:
+// to populate the fields again, run:
 /* 
-fieldsSourceData.<category>.reduce((accum, current) => {
-  accum[current.value] = false;
-  return accum;
-}, {}) 
+let result = {};
+for (let key of Object.keys(fieldsSourceData)) {
+  result[key] = fieldsSourceData[key].reduce((accum, current) => {
+    accum[current.value] = false;
+    return accum;
+  }, {}) 
+}
 */
 export const initialFieldsState = {
   main: {
@@ -33,7 +36,7 @@ export const initialFieldsState = {
     customer__phone: false,
     customer__note: false,
   },
-  lineItems: {
+  line_items: {
     line_items__title: false,
     line_items__price: false,
     line_items__quantity: false,
@@ -60,7 +63,7 @@ export const initialFieldsState = {
     transactions__currency: false,
     transactions__processed_at: false,
   },
-  billingAddress: {
+  billing_address: {
     billing_address__first_name: false,
     billing_address__last_name: false,
     billing_address__address1: false,
@@ -75,12 +78,12 @@ export const initialFieldsState = {
     billing_address__province_code: false,
     billing_address__country_code: false,
   },
-  discountCodes: {
+  discount_codes: {
     discount_codes__amount: false,
     discount_codes__code: false,
     discount_codes__type: false,
   },
-  shippingAddress: {
+  shipping_address: {
     shipping_address__first_name: false,
     shipping_address__last_name: false,
     shipping_address__address1: false,
@@ -97,7 +100,7 @@ export const initialFieldsState = {
     shipping_address__country_code: false,
     shipping_address__province_code: false,
   },
-  shippingLines: {
+  shipping_lines: {
     shipping_lines__code: false,
     shipping_lines__discounted_price: false,
     shipping_lines__price: false,
@@ -106,7 +109,7 @@ export const initialFieldsState = {
     shipping_lines__carrier_identifier: false,
     shipping_lines__requested_fulfillment_service_id: false,
   },
-  taxLines: {
+  tax_lines: {
     tax_lines__price: false,
     tax_lines__rate: false,
     tax_lines__title: false,
@@ -117,7 +120,7 @@ export const initialFieldsState = {
     fulfillments__tracking_numbers: false,
     fulfillments__tracking_urls: false,
   },
-  fulfillmentOrders: {
+  fulfillment_orders: {
     fulfillment_orders__id: false,
     fulfillment_orders__assigned_location_id: false,
     fulfillment_orders__status: false,

@@ -2,7 +2,7 @@ import Router from '@koa/router';
 import { verifyRequest } from 'simple-koa-shopify-auth';
 import Shopify from '@shopify/shopify-api';
 const orderCountRoute = new Router();
-import verifySessionActive from '../../../../utils/server/middleware/verifySessionActive';
+import verifySessionActive from '../../../services/middleware/verifySessionActive';
 
 // Found out that Shopify's api route for order count doesn't have consistent
 // parameters with the get all orders route, so I can't take the user's query

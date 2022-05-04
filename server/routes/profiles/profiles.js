@@ -4,7 +4,7 @@ import { verifyRequest } from 'simple-koa-shopify-auth';
 import Shopify from '@shopify/shopify-api';
 import ProfileModel from 'server/models/ProfileModel.js';
 import ShopModel from 'server/models/ShopModel';
-import { getShopFromAuthHeader } from 'utils/server/getShopFromAuthHeader';
+import { getShopFromAuthHeader } from 'server/services/getShopFromAuthHeader';
 const profilesRoute = new Router();
 // shop name for temp debugging/development
 const shop = 'test-store-testing-testing-wuddup.myshopify.com';
@@ -90,7 +90,6 @@ profilesRoute.patch(
 );
 
 // DELETE an export profile
-// TODO: Also remove it from the shop that owns it
 profilesRoute.delete(
   '/api/profiles/delete',
   bodyParser(),

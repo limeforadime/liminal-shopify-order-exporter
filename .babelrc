@@ -10,6 +10,7 @@
           "./"
         ]
       }
-    ]
+    ],
+    ["@babel/plugin-transform-modules-commonjs"]
   ]
 }

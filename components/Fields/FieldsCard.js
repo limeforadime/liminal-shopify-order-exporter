@@ -32,7 +32,7 @@ const FieldsCard = () => {
         accessibilityId={'line-items-fields-dropdown'}
         height="320px"
         initialOpenState={false}
-        sourceData={fieldsSourceData.lineItems}
+        sourceData={fieldsSourceData.line_items}
         checkedState={fieldsState.checkedLineItemsState}
         setCheckedState={fieldsState.setCheckedLineItemsState}
       />
@@ -50,7 +50,7 @@ const FieldsCard = () => {
         accessibilityId={'billing-address-fields-dropdown'}
         height="250px"
         initialOpenState={false}
-        sourceData={fieldsSourceData.billingAddress}
+        sourceData={fieldsSourceData.billing_address}
         checkedState={fieldsState.checkedBillingAddressState}
         setCheckedState={fieldsState.setCheckedBillingAddressState}
       />
@@ -59,7 +59,7 @@ const FieldsCard = () => {
         accessibilityId={'discount-codes-fields-dropdown'}
         height="120px"
         initialOpenState={false}
-        sourceData={fieldsSourceData.discountCodes}
+        sourceData={fieldsSourceData.discount_codes}
         checkedState={fieldsState.checkedDiscountCodesState}
         setCheckedState={fieldsState.setCheckedDiscountCodesState}
       />
@@ -68,7 +68,7 @@ const FieldsCard = () => {
         accessibilityId={'shipping-address-fields-dropdown'}
         height="250px"
         initialOpenState={false}
-        sourceData={fieldsSourceData.shippingAddress}
+        sourceData={fieldsSourceData.shipping_address}
         checkedState={fieldsState.checkedShippingAddressState}
         setCheckedState={fieldsState.setCheckedShippingAddressState}
       />
@@ -77,7 +77,7 @@ const FieldsCard = () => {
         accessibilityId={'shipping-lines-fields-dropdown'}
         height="150px"
         initialOpenState={false}
-        sourceData={fieldsSourceData.shippingLines}
+        sourceData={fieldsSourceData.shipping_lines}
         checkedState={fieldsState.checkedShippingLinesState}
         setCheckedState={fieldsState.setCheckedShippingLinesState}
       />
@@ -86,7 +86,7 @@ const FieldsCard = () => {
         accessibilityId={'tax-lines-fields-dropdown'}
         height="120px"
         initialOpenState={false}
-        sourceData={fieldsSourceData.taxLines}
+        sourceData={fieldsSourceData.tax_lines}
         checkedState={fieldsState.checkedTaxLinesState}
         setCheckedState={fieldsState.setCheckedTaxLinesState}
       />
@@ -104,7 +104,7 @@ const FieldsCard = () => {
         accessibilityId={'fulfillment-orders-fields-dropdown'}
         height="130px"
         initialOpenState={false}
-        sourceData={fieldsSourceData.fulfillmentOrders}
+        sourceData={fieldsSourceData.fulfillment_orders}
         checkedState={fieldsState.checkedFulfillmentOrdersState}
         setCheckedState={fieldsState.setCheckedFulfillmentOrdersState}
       />

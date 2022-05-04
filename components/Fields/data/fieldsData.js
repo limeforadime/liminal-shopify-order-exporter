@@ -1,4 +1,4 @@
-export const fieldsSourceData = {
+const fieldsSourceData = {
   main: [
     {
       value: 'name',
@@ -99,7 +99,7 @@ export const fieldsSourceData = {
   customer: [
     {
       value: 'customer__email',
-      name: 'Email',
+      name: 'Customer Email',
       description: `The customer's email address.`,
     },
     {
@@ -114,7 +114,7 @@ export const fieldsSourceData = {
     },
     {
       value: 'customer__phone',
-      name: 'Phone',
+      name: 'Customer Phone',
       description: `The unique phone number (E.164 format) for this customer.`,
     },
     {
@@ -123,7 +123,7 @@ export const fieldsSourceData = {
       description: `Extra information about the customer.`,
     },
   ],
-  lineItems: [
+  line_items: [
     {
       value: 'line_items__title',
       name: 'Line Item Name',
@@ -210,7 +210,7 @@ export const fieldsSourceData = {
       description: `An array of custom information for an item that has been added to the cart. Often used to provide product customization options.`,
     },
   ],
-  // TODO: Transactions must be retrieved as its own request based on the order id. Doesn't come included in the Orders api.
+  // Transactions must be retrieved as its own request based on the order id. Doesn't come included in the Orders api.
   // /admin/api/2022-01/orders/{order_id}/transactions.json
   transactions: [
     {
@@ -244,7 +244,7 @@ export const fieldsSourceData = {
       description: `The date and time (ISO 8601 format) when a transaction was processed. This value is the date that's used in the analytic reports. By default, it matches the created_at value.`,
     },
   ],
-  billingAddress: [
+  billing_address: [
     {
       value: 'billing_address__first_name',
       name: 'Billing First Name',
@@ -310,15 +310,9 @@ export const fieldsSourceData = {
       name: 'Billing Country Code',
       description: `The two-letter code (ISO 3166-1 alpha-2 two-letter country code) for the country of the billing address.)`,
     },
-    // TODO: Invalid. Find equivalent
-    // {
-    //   value: 'billing_address.default',
-    //   name: 'Billing Is Default',
-    //   description: `Default billing address. Valid values are true or false.`,
-    // },
   ],
-  // TODO: discount_codes actually returns an array now
-  discountCodes: [
+  // discount_codes actually returns an array now
+  discount_codes: [
     {
       value: 'discount_codes__amount',
       name: 'Discount Amount',
@@ -335,7 +329,7 @@ export const fieldsSourceData = {
       description: `The type of discount. Valid values are:<br><ul><li><b>fixed_amount</b>: The default value. "Applies a discount of amount as a unit of the store's currency. For example, if amount is 30 and the store's currency is USD, then 30 USD is deducted from the order total when the discount is applied.</li><li><b>percentage</b>: Applies a percentage discount of amount. For example, if amount is 30, then 30% of the order total will be deducted when the discount is applied.</li><li><b>shipping</b>: Applies a free shipping discount on orders that have a shipping rate less than or equal to amount. For example, if amount is 30, the discount will give the customer free shipping for any shipping rate that is less than or equal to $30.</li></ul>`,
     },
   ],
-  shippingAddress: [
+  shipping_address: [
     {
       value: 'shipping_address__first_name',
       name: 'Shipping First Name',
@@ -412,9 +406,9 @@ export const fieldsSourceData = {
       description: `The two-letter abbreviation of the state or province of the shipping address.`,
     },
   ],
-  // TODO: The API has more values than are listed here
+  // The API has more values than are listed here
   // returns array
-  shippingLines: [
+  shipping_lines: [
     {
       value: 'shipping_lines__code',
       name: 'Shipping Method Code',
@@ -451,7 +445,7 @@ export const fieldsSourceData = {
       description: `A reference to the fulfillment service that is being requested for the shipping method. Present if the shipping method requires processing by a third party fulfillment service; null otherwise.`,
     },
   ],
-  taxLines: [
+  tax_lines: [
     {
       value: 'tax_lines__price',
       name: 'Tax Line Value',
@@ -475,7 +469,7 @@ export const fieldsSourceData = {
     },
   ],
   // https://shopify.dev/api/admin-rest/2022-01/resources/fulfillment#resource_object
-  // TODO: The shape of the data here's a little weird. Verify each field
+  // The shape of the data here's a little weird. Verify each field
   fulfillments: [
     {
       value: 'fulfillments__tracking_company',
@@ -484,7 +478,7 @@ export const fieldsSourceData = {
     },
     {
       value: 'fulfillments__tracking_numbers',
-      name: 'Tracking Number',
+      name: 'Tracking Numbers',
       description: `Tracking numbers, provided by the shipping company.`,
     },
     {
@@ -494,7 +488,7 @@ export const fieldsSourceData = {
     },
   ],
   // https://shopify.dev/api/admin-rest/2022-01/resources/fulfillmentorder#[get]/admin/api/2022-01/orders/{order_id}/fulfillment_orders.json
-  fulfillmentOrders: [
+  fulfillment_orders: [
     {
       value: 'fulfillment_orders__id',
       name: 'Id',
@@ -512,3 +506,16 @@ export const fieldsSourceData = {
     },
   ],
 };
+const groupNames = [
+  'customer',
+  'line_items',
+  'transactions',
+  'billing_address',
+  'discount_codes',
+  'shipping_address',
+  'shipping_lines',
+  'tax_lines',
+  'fulfillments',
+  'fulfillment_orders',
+];
+export { fieldsSourceData, groupNames };

@@ -7,7 +7,7 @@ import { createShopifyAuth, verifyRequest } from 'simple-koa-shopify-auth';
 import Shopify, { ApiVersion } from '@shopify/shopify-api';
 import Router from '@koa/router';
 
-import dbConnect from '../utils/server/dbConnect';
+import dbConnect from './services/dbConnect';
 import sessionStorage from './sessionStorage';
 import ShopModel from './models/ShopModel';
 import webhookRouters from './webhooks';

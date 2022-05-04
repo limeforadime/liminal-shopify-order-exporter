@@ -4,7 +4,7 @@ import { DeleteMajor, EditMajor } from '@shopify/polaris-icons';
 import { useRouter } from 'next/router';
 import { Redirect } from '@shopify/app-bridge/actions';
 import { useAppBridge } from '@shopify/app-bridge-react';
-import userLoggedInFetch from '../utils/client/userLoggedInFetch';
+import userLoggedInFetch from '../utils/userLoggedInFetch';
 import { AppStateContext } from '../components/AppStateWrapper';
 
 const Index = () => {

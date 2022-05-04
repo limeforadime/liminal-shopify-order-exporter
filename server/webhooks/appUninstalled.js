@@ -1,6 +1,6 @@
 import { receiveWebhook, registerWebhook } from '@shopify/koa-shopify-webhooks';
 import { ApiVersion } from '@shopify/shopify-api';
-import verifyWebhook from '../../utils/server/middleware/verifyWebhook';
+import verifyWebhook from '../services/middleware/verifyWebhook';
 const webhook = receiveWebhook({ secret: process.env.SHOPIFY_API_SECRET });
 import Router from '@koa/router';
 import SessionModel from '../models/SessionModel';
